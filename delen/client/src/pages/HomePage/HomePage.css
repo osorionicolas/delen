@@ -1,0 +1,14 @@
+.light{
+    background-color: #FFF;
+    color: #363537;
+}
+
+.dark{
+    background-color: #34454a;
+    color: #FAFAFA;
+}
+
+#textArea{
+    margin: 10vw;
+    width: 80vw;
+}

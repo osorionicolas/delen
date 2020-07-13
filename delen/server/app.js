@@ -1,0 +1,80 @@
+const express = require("express");
+const bp = require("body-parser");
+const port = 5000;
+const app = express();
+const cors = require('cors')
+const multer = require("multer");
+const fs = require('fs');
+
+app.use(cors());
+app.use(bp.urlencoded({ extended: false }));
+app.use(bp.text())
+
+const dirPath = "./server/files";
+
+var text = "";
+
+var storage = multer.diskStorage({
+  destination: function(req, file, callback) {
+    callback(null, dirPath); // here we specify the destination . in this case i specified the current directory
+  },
+  filename: function(req, file, callback) {
+    console.log(file);
+    callback(null, file.originalname);// here we specify the file saving name . in this case i specified the original file name
+  }
+});
+
+var uploadDisk = multer({ storage: storage });
+
+app.post("/files", uploadDisk.single("file"), (req, res) => {
+  console.log("Files uploaded");
+  res.send("Files upload success");
+});
+
+app.get("/files", (req, res) => {
+  console.log("Looking for files...");
+  fs.readdir(dirPath, function (err, files) {
+    //handling error
+    if (err) {
+        return console.log('Unable to scan directory: ' + err);
+    } 
+	console.log(files);
+    res.send(files);
+  });
+});
+
+app.get("/files/:file", (req, res) => {
+	const file = req.params.file
+	console.log("Looking for file " + file);
+	res.download(dirPath + "/" + file);
+});
+
+app.delete("/files/:file", (req, res) => {
+	const file = req.params.file
+  console.log("Deleting file " + file);
+  fs.unlink(dirPath + "/" + file, (err) => {
+    if (err) {
+      console.error(err)
+      return
+    }
+  })
+	res.sendStatus(204);
+});
+
+app.post("/text", (req, res) => {
+	if(this.text === undefined)
+		this.text = "";
+	const body = req.body;
+	console.log("Saving text...");
+	if(body)
+		this.text = body;
+	res.send(this.text)
+});
+
+app.get("/text", (req, res) => {
+	res.send(this.text);
+});
+
+app.listen(port, () => {
+  console.log("Express server listening on port " + port);
+});

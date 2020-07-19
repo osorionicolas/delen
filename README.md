@@ -1,6 +1,6 @@
 ### Technologies
 
-Frontend: React
+Frontend: React<br>
 Backend: NodeJS
 
 ### Run

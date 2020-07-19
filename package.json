@@ -5,7 +5,8 @@
   "scripts": {
     "server": "node server/app.js",
     "client": "npm start --prefix client",
-    "delen": "concurrently \"npm run server\" \"npm run client\""
+    "delen": "concurrently \"npm run server\" \"npm run client\"",
+    "postinstall": "cd client && npm install && cd ../server && npm install"
   },
   "author": "",
   "license": "ISC",

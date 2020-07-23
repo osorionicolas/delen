@@ -5,10 +5,12 @@ const app = express();
 const cors = require('cors')
 const multer = require("multer");
 const fs = require('fs');
+const path = require('path');
 
 app.use(cors());
 app.use(bp.urlencoded({ extended: false }));
 app.use(bp.text())
+app.use(express.static(path.join('build')));
 
 const dirPath = "./server/files";
 
@@ -66,13 +68,16 @@ app.post("/text", (req, res) => {
 		this.text = "";
 	const body = req.body;
 	console.log("Saving text...");
-	if(body)
-		this.text = body;
+	if(body) this.text = body;
 	res.send(this.text)
 });
 
 app.get("/text", (req, res) => {
 	res.send(this.text);
+});
+
+app.get('/', function(req, res) {
+	res.sendFile(path.join('build', 'index.html'));
 });
 
 app.listen(port, () => {

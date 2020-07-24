@@ -12,7 +12,7 @@ app.use(bp.urlencoded({ extended: false }));
 app.use(bp.text())
 app.use(express.static(path.join('build')));
 
-const dirPath = "./server/files";
+const dirPath = "./files";
 
 var text = "";
 

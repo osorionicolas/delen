@@ -1,6 +1,7 @@
 #!/bin/sh
 
-git pull https://github.com/osorionicolas/delen
+git stash
+git pull
 npm install -p client
 npm run build --prod -p client
 mv client/build server

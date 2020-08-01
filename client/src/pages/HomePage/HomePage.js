@@ -1,7 +1,7 @@
 import React from 'react';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import './HomePage.css';
-import { IP } from '../../constants';
+import { SERVER_ADDRESS } from '../../constants';
 
 class HomePage extends React.Component {
 
@@ -9,12 +9,12 @@ class HomePage extends React.Component {
         super(props);
 
         this.state = {
-            value: ""
+            value: "",
         }  
     }
 
     componentDidMount(){
-        fetch(`http://${IP}:5000/text`)
+        fetch(`http://${SERVER_ADDRESS}/text`)
             .then(response => response.text())
             .then(data => 
                 this.setState({
@@ -30,9 +30,10 @@ class HomePage extends React.Component {
         });
     }
 
+
     handleBlur = (event) => {
         const { value } = event.target;
-        fetch(`http://${IP}:5000/text`, {
+        fetch(`http://${SERVER_ADDRESS}/text`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: value

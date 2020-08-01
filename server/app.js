@@ -77,7 +77,11 @@ app.get("/text", (req, res) => {
 });
 
 app.get('/', function(req, res) {
-	res.sendFile(path.join('build', 'index.html'));
+	const front = path.join('build', 'index.html')
+	if(fs.existsSync(front))
+		res.sendFile(path.join('build', 'index.html'));
+	else
+		res.redirect('http://localhost:3000')
 });
 
 app.listen(port, () => {

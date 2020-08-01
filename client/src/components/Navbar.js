@@ -1,5 +1,5 @@
 import React from 'react';
-import Toggle from './Toggler';
+import Toggle from './Toggle';
 import { AppBar, Toolbar, Typography, Button, Dialog, DialogTitle, DialogContent, Hidden } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
@@ -9,7 +9,8 @@ import { DropzoneDialog } from 'material-ui-dropzone';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import download from 'downloadjs';
 import ClearIcon from '@material-ui/icons/Clear';
-import { IP } from '../constants';
+import { SERVER_ADDRESS } from '../constants';
+import Loader from 'react-loader-spinner';
 
 const styles = (theme) => ({
     button: {
@@ -27,6 +28,22 @@ const styles = (theme) => ({
         display: "flow-root",
         marginBottom: "10px",
         borderBottom: "groove"
+    },
+
+    loader: {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)"
+    },
+
+    loaderBackground: {
+        background: "black",
+        height: "100%",
+        width: "100%",
+        position: "absolute",
+        zIndex: 9999,
+        opacity: 0.7
     }
 });
 
@@ -39,7 +56,8 @@ class Navbar extends React.Component {
             openUploads: false,
             openDownloads: false,
             files: [],
-            downloadableFiles: []
+            downloadableFiles: [],
+            loading: false
         };
 
         this.handleSave = this.handleSave.bind(this);
@@ -67,42 +85,49 @@ class Navbar extends React.Component {
         files.forEach(file => {
             const data = new FormData();
             data.append("file", file);
-            fetch(`http://${IP}:5000/files`, {
+            fetch(`http://${SERVER_ADDRESS}/files`, {
                 method: 'POST',
                 body: data
             })
         })
     }
  
-    async handleOpen(dialog) {
+    handleOpen(dialog) {
         if(dialog === "upload"){
             this.setState({
                 openUploads: true,
             });
         }
         else if(dialog === "download") {
-            const downloadableFiles = await fetch(`http://${IP}:5000/files`)
-                .then(response => response.json())
-                .then(data => data)
-            this.setState({
-                openDownloads: true,
-                downloadableFiles: downloadableFiles
-            });
+            this.getDownloadableFiles();
         }
     }
 
+    async getDownloadableFiles(){
+        const downloadableFiles = await fetch(`http://${SERVER_ADDRESS}/files`)
+        .then(response => response.json())
+        .then(data => data)
+        this.setState({
+            openDownloads: true,
+            downloadableFiles: downloadableFiles
+        });
+    }
+
     async downloadFile(file){
-        const res = await fetch(`http://${IP}:5000/files/` + file)
+        this.handleLoader(true);
+        const res = await fetch(`http://${SERVER_ADDRESS}/files/` + file);
         const blob = await res.blob();
         download(blob, file);
+        this.handleLoader(false);
     }
 
     removeFile(file){
         const response = window.confirm("You are about to delete the file, are you sure you want it?")
         if(response){
-            fetch(`http://${IP}:5000/files/` + file, {
+            fetch(`http://${SERVER_ADDRESS}/files/` + file, {
                 method: 'DELETE'
             })
+            this.getDownloadableFiles();
         }
     }
 
@@ -112,12 +137,21 @@ class Navbar extends React.Component {
         copyText.setSelectionRange(0, 99999);
         document.execCommand("copy");
     }
+ 
+    handleLoader = (boolean) => {
+        this.setState({
+            ...this.state,
+            loading: boolean
+        })
+    }
 
     render(){
         const { theme, themeToggler, classes } = this.props;
         
+        //TODO Mover el Loader a donde corresponda
         return (
             <div className="flexGrow">
+                { (this.state.loading) ? <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div>  : "" }
                 <AppBar position="static">
                     <Toolbar variant="dense">
                     <Typography variant="h6" color="inherit" className="flexGrow">
@@ -143,12 +177,13 @@ class Navbar extends React.Component {
                             <Hidden xsDown>Upload</Hidden>   
                         </Button>
                         <DropzoneDialog
+                            acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
                             open={this.state.openUploads}
                             onSave={this.handleSave}
                             showPreviews={true}
                             maxFileSize={500000000}
                             onClose={this.handleClose.bind(this, "upload")}
-                        />
+                        />        
                         <Button
                             variant="contained"
                             color="default"
@@ -182,12 +217,13 @@ class Navbar extends React.Component {
                                 }
                             </DialogContent>
                         </Dialog>
-                            <Button 
-                                variant="contained"
-                                color="default"
-                                className={classes.button}
-                            >
+                        <Button 
+                            variant="contained"
+                            color="default"
+                            className={classes.button}
+                        >
                             <Toggle theme={theme} toggleTheme={themeToggler} />
+                            <Hidden xsDown>Dark Theme</Hidden>
                         </Button>
                     </div>
                     </Toolbar>

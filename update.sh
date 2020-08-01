@@ -3,12 +3,12 @@
 git stash
 git pull
 chmod 777 *.sh
-cd client
+cd /home/docker/images/delen/client
 npm install
 npm run build --prod
-mv build ../server
-cd ../server
+mv build /home/docker/images/delen/server
+cd /home/docker/images/delen/server
 npm install
-cd ..
+cd /home/docker/images/delen
 ./build.sh
 ./run.sh

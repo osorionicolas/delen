@@ -183,6 +183,7 @@ class Navbar extends React.Component {
                             showPreviews={true}
                             maxFileSize={500000000}
                             onClose={this.handleClose.bind(this, "upload")}
+							filesLimit={50}
                         />        
                         <Button
                             variant="contained"

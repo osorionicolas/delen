@@ -37,9 +37,7 @@ app.get("/files", (req, res) => {
   console.log("Looking for files...");
   fs.readdir(dirPath, function (err, files) {
     //handling error
-    if (err) {
-        return console.log('Unable to scan directory: ' + err);
-    } 
+    if (err) return console.log('Unable to scan directory: ' + err); 
 	console.log(files);
     res.send(files);
   });
@@ -68,7 +66,7 @@ app.post("/text", (req, res) => {
 		this.text = "";
 	const body = req.body;
 	console.log("Saving text...");
-	if(body) this.text = body;
+	this.text = (body) ? body : "";
 	res.send(this.text)
 });
 

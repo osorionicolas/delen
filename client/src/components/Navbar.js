@@ -15,6 +15,7 @@ import Loader from 'react-loader-spinner';
 const styles = (theme) => ({
     button: {
         margin: theme.spacing(1),
+        justifyContent: "flex-end"
     },
 
     fileName: {
@@ -126,8 +127,7 @@ class Navbar extends React.Component {
         if(response){
             fetch(`http://${SERVER_ADDRESS}/files/` + file, {
                 method: 'DELETE'
-            })
-            this.getDownloadableFiles();
+            }).then(this.getDownloadableFiles())
         }
     }
 
@@ -147,7 +147,7 @@ class Navbar extends React.Component {
 
     render(){
         const { theme, themeToggler, classes } = this.props;
-        
+        const files = this.state.downloadableFiles;
         //TODO Mover el Loader a donde corresponda
         return (
             <div className="flexGrow">
@@ -195,12 +195,11 @@ class Navbar extends React.Component {
                             <Hidden xsDown>Download</Hidden>
                         </Button>
                         <Dialog fullWidth={true} onClose={this.handleClose.bind(this, "download")} aria-labelledby="dialog-title" open={this.state.openDownloads}>
-                            <DialogTitle style={{ textAlign: "center"}} id="dialog-title">
-                            Uploaded files
-                            </DialogTitle>
+                            <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Uploaded files</DialogTitle>
+                            <Typography style={{ textAlign: "right", marginRight: "24px"}} variant="subtitle1" color="inherit" className="flexGrow">There are {files.length} file/s</Typography>
                             <DialogContent dividers>
                                 {
-                                    this.state.downloadableFiles.map(file => (
+                                    files.map(file => (
                                         <div key={file} className={classes.file}>
                                             <span className={classes.fileName}>{file}</span>
                                             <div style={{float: "right"}}>

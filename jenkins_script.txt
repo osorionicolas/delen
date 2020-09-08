@@ -1,7 +1,7 @@
 cd /home/docker/images/delen/
 git stash
 git pull
-chmod 777 *.sh
+chmod +x *.sh
 cd client
 echo "REACT_APP_SERVER_ADDRESS = '${REACT_APP_SERVER_ADDRESS}'" > .env
 npm install

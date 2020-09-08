@@ -51,14 +51,14 @@ app.get("/files/:file", (req, res) => {
 
 app.delete("/files/:file", (req, res) => {
 	const file = req.params.file
-  console.log("Deleting file " + file);
-  fs.unlink(dirPath + "/" + file, (err) => {
-    if (err) {
-      console.error(err)
-      return
-    }
-  })
-	res.sendStatus(204);
+	console.log("Deleting file " + file);
+	fs.unlink(dirPath + "/" + file, (err) => {
+		if (err) {
+		  console.error(err)
+		  res.sendStatus(500);
+		}
+		res.sendStatus(204);
+	})
 });
 
 app.post("/text", (req, res) => {

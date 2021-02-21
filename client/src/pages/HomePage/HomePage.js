@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
-import './HomePage.css'
 import { SERVER_ADDRESS } from '../../config/environment'
 import { withStyles  } from '@material-ui/core/styles'
 

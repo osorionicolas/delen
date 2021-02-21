@@ -9,6 +9,7 @@ const path = require('path')
 app.use(cors())
 app.use(bp.urlencoded({ extended: false }))
 app.use(bp.text())
+app.use(express.static(path.join(__dirname, 'build')));
 
 const dirPath = process.env.FILES_PATH || "./files"
 const port = process.env.PORT || 5000

@@ -145,6 +145,7 @@ const Navbar = (props) => {
         else if(checked.length > 0 && checked.length !== downloadableFiles.length) {
             setChecked(checked)
         }
+    // eslint-disable-next-line
     }, [selectAll, downloadableFiles])
 
     useEffect(() => {

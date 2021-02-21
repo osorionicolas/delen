@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Toggle from './Toggle';
 import { AppBar, Toolbar, Typography, Button, Dialog, DialogTitle, DialogContent, Hidden } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { withStyles  } from '@material-ui/core/styles';
 import { DropzoneDialog } from 'material-ui-dropzone';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import download from 'downloadjs';
-import ClearIcon from '@material-ui/icons/Clear';
-import { SERVER_ADDRESS } from '../constants';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { SERVER_ADDRESS } from '../config/environment';
 import Loader from 'react-loader-spinner';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+import { makeStyles } from '@material-ui/core/styles';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-const styles = (theme) => ({
+const styles = makeStyles((theme) => ({
     button: {
-        margin: theme.spacing(1),
-        justifyContent: "flex-end"
+        margin: theme.spacing(1)
+    },
+
+    toEnd: {
+        float: "right"
     },
 
     fileName: {
@@ -45,192 +55,229 @@ const styles = (theme) => ({
         position: "absolute",
         zIndex: 9999,
         opacity: 0.7
+    },
+
+    label: {
+        marginLeft: "10px"
     }
-});
+}))
 
-class Navbar extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            openUploads: false,
-            openDownloads: false,
-            files: [],
-            downloadableFiles: [],
-            loading: false
-        };
-
-        this.handleSave = this.handleSave.bind(this);
-    }
-
-    handleClose(dialog) {
-        if(dialog === "upload"){
-            this.setState({
-                openUploads: false,
-            });
-        }
-        else if(dialog === "download") {
-            this.setState({
-                openDownloads: false,
-            });
-        }
-    }
+const Navbar = (props) => {
+    const classes = styles()
+    const [checked, setChecked] = useState([]);
+    const [openUploads, setOpenUploads] = useState(false)
+    const [openDownloads, setOpenDownloads] = useState(false)
+    const [downloadableFiles, setDownloadableFiles] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [selectAll, setSelectAll] = useState(false)
+    const { theme, themeToggler } = props
  
-    handleSave(files) {
+    const handleSave = (files) => {
         //Saving files to state for further use and closing Modal.
-        this.setState({
-            files: files,
-            openUploads: false
-        });
+        setOpenUploads(false)
         files.forEach(file => {
-            const data = new FormData();
-            data.append("file", file);
+            const data = new FormData()
+            data.append("file", file)
             fetch(`http://${SERVER_ADDRESS}/files`, {
                 method: 'POST',
                 body: data
             })
         })
     }
- 
-    handleOpen(dialog) {
-        if(dialog === "upload"){
-            this.setState({
-                openUploads: true,
-            });
-        }
-        else if(dialog === "download") {
-            this.getDownloadableFiles();
-        }
+
+    const getDownloadableFiles = async () => {
+        const downloadedFiles = await fetch(`http://${SERVER_ADDRESS}/files`)
+            .then(response => response.json())
+            .then(data => data)
+        setDownloadableFiles(downloadedFiles)
     }
 
-    async getDownloadableFiles(){
-        const downloadableFiles = await fetch(`http://${SERVER_ADDRESS}/files`)
-        .then(response => response.json())
-        .then(data => data)
-        this.setState({
-            openDownloads: true,
-            downloadableFiles: downloadableFiles
-        });
+    const downloadFile = async (file) => {
+        setLoading(true)
+        const res = await fetch(`http://${SERVER_ADDRESS}/files/` + file)
+        const blob = await res.blob()
+        download(blob, file)
+        setLoading(false)
     }
 
-    async downloadFile(file){
-        this.handleLoader(true);
-        const res = await fetch(`http://${SERVER_ADDRESS}/files/` + file);
-        const blob = await res.blob();
-        download(blob, file);
-        this.handleLoader(false);
-    }
-
-    removeFile(file){
-        const response = window.confirm("You are about to delete the file, are you sure you want it?")
-        if(response){
-            fetch(`http://${SERVER_ADDRESS}/files/` + file, {
-                method: 'DELETE'
-            }).then(this.getDownloadableFiles())
+    const removeFiles = (files) => {
+        const response = window.confirm("You are about to delete some files, are you sure you want it?")
+        if(response) {
+            files.forEach(file => {
+                fetch(`http://${SERVER_ADDRESS}/files/` + file, {
+                    method: 'DELETE'
+                }).then(setTimeout(() => getDownloadableFiles(), 500))
+            })
+            setSelectAll(false)
         }
     }
 
-    copyToClipboard(){
-        var copyText = document.getElementById("textArea");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        document.execCommand("copy");
+    const copyToClipboard = () => {
+        var copyText = document.getElementById("textArea")
+        copyText.select()
+        copyText.setSelectionRange(0, 99999)
+        document.execCommand("copy")
     }
- 
-    handleLoader = (boolean) => {
-        this.setState({
-            ...this.state,
-            loading: boolean
-        })
+    
+    const handleToggle = (value) => {
+        const currentIndex = checked.indexOf(value)
+        const newChecked = [...checked]
+  
+        if(currentIndex === -1) {
+            newChecked.push(value)
+        }
+        else {
+            newChecked.splice(currentIndex, 1)
+        }
+        setSelectAll(false)
+        setChecked(newChecked)
     }
 
-    render(){
-        const { theme, themeToggler, classes } = this.props;
-        const files = this.state.downloadableFiles;
-        //TODO Mover el Loader a donde corresponda
-        return (
-            <div className="flexGrow">
-                { (this.state.loading) ? <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div>  : "" }
-                <AppBar position="static">
-                    <Toolbar variant="dense">
-                    <Typography variant="h6" color="inherit" className="flexGrow">
-                        Delen
-                    </Typography>
-                    <div>
-                        <Button
-                            variant="contained"
-                            color="default"
-                            className={classes.button}
-                            startIcon={<FileCopyIcon />}
-                            onClick={this.copyToClipboard}
-                        >
-                            <Hidden xsDown>Copy</Hidden>
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="default"
-                            className={classes.button}
-                            startIcon={<CloudUploadIcon />}
-                            onClick={this.handleOpen.bind(this, "upload")}
-                        >
-                            <Hidden xsDown>Upload</Hidden>   
-                        </Button>
-                        <DropzoneDialog
-                            acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
-                            open={this.state.openUploads}
-                            onSave={this.handleSave}
-                            showPreviews={true}
-                            maxFileSize={500000000}
-                            onClose={this.handleClose.bind(this, "upload")}
-							filesLimit={50}
-                        />        
-                        <Button
-                            variant="contained"
-                            color="default"
-                            className={classes.button}
-                            startIcon={<CloudDownloadIcon />}
-                            onClick={this.handleOpen.bind(this, "download")}
-                        >
-                            <Hidden xsDown>Download</Hidden>
-                        </Button>
-                        <Dialog fullWidth={true} onClose={this.handleClose.bind(this, "download")} aria-labelledby="dialog-title" open={this.state.openDownloads}>
-                            <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Uploaded files</DialogTitle>
-                            <Typography style={{ textAlign: "right", marginRight: "24px"}} variant="subtitle1" color="inherit" className="flexGrow">There are {files.length} file/s</Typography>
-                            <DialogContent dividers>
-                                {
-                                    files.map(file => (
-                                        <div key={file} className={classes.file}>
-                                            <span className={classes.fileName}>{file}</span>
-                                            <div style={{float: "right"}}>
-                                                <Button
-                                                    startIcon={<GetAppIcon />}
-                                                    onClick={() => this.downloadFile(file)}
-                                                ></Button>
-                                                <Button
-                                                    startIcon={<ClearIcon />}
-                                                    onClick={() => this.removeFile(file)}
-                                                ></Button>
-                                            </div>
-                                        </div>
-                                    ))
-                                }
-                            </DialogContent>
-                        </Dialog>
-                        <Button 
-                            variant="contained"
-                            color="default"
-                            className={classes.button}
-                        >
-                            <Toggle theme={theme} toggleTheme={themeToggler} />
-                            <Hidden xsDown>Dark Theme</Hidden>
-                        </Button>
-                    </div>
-                    </Toolbar>
-                </AppBar>
-            </div>
-        )
+    const downloadAll = () => {
+        checked.forEach(file => downloadFile(file))
     }
+
+    useEffect(() => {
+        setChecked([])
+        if(selectAll) {
+            setChecked(downloadableFiles)
+        }
+        else if(checked.length > 0 && checked.length !== downloadableFiles.length) {
+            setChecked(checked)
+        }
+    }, [selectAll, downloadableFiles])
+
+    useEffect(() => {
+        setSelectAll(false)
+        setChecked([])
+        getDownloadableFiles()
+    }, [openDownloads])
+
+    //TODO Mover el Loader a donde corresponda
+    return (
+        <div className="flexGrow">
+            { (loading) ? <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div>  : "" }
+            <AppBar position="static">
+                <Toolbar variant="dense">
+                <Typography variant="h6" color="inherit" className="flexGrow">
+                    Delen
+                </Typography>
+                <div>
+                    <Button
+                        variant="contained"
+                        color="default"
+                        className={classes.button}
+                        startIcon={<FileCopyIcon />}
+                        onClick={copyToClipboard}
+                    >
+                        <Hidden xsDown>Copy</Hidden>
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="default"
+                        className={classes.button}
+                        startIcon={<CloudUploadIcon />}
+                        onClick={() => setOpenUploads(true)}
+                    >
+                        <Hidden xsDown>Upload</Hidden>   
+                    </Button>
+                    <DropzoneDialog
+                        acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
+                        open={openUploads}
+                        onSave={handleSave}
+                        showPreviews={true}
+                        maxFileSize={500000000}
+                        onClose={() => setOpenUploads(false)}
+                        filesLimit={50}
+                    />        
+                    <Button
+                        variant="contained"
+                        color="default"
+                        className={classes.button}
+                        startIcon={<CloudDownloadIcon />}
+                        onClick={() => setOpenDownloads(true)}
+                    >
+                        <Hidden xsDown>Download</Hidden>
+                    </Button>
+                    <Dialog fullWidth={true} onClose={() => setOpenDownloads(false)} aria-labelledby="dialog-title" open={openDownloads}>
+                        <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Uploaded files</DialogTitle>
+                        <div style={{display: "flex", marginLeft: "38px"}}>
+                            <FormControlLabel
+                                control={<Checkbox checked={selectAll} onChange={() => setSelectAll(!selectAll)} name="checkedA" />}
+                                label="Select all"
+                                classes={{label: "label"}}
+                            />
+                            <Typography style={{ textAlign: "right", marginRight: "28px", alignSelf: "center"}} variant="subtitle1" color="inherit" className="flexGrow">There are {downloadableFiles.length} file/s</Typography>
+                        </div>
+                        <DialogContent dividers>
+                            <List>
+                            {
+                                downloadableFiles.map(file => (
+                                    <ListItem key={file}dense button onClick={() => handleToggle(file)}>
+                                        <ListItemIcon>
+                                            <Checkbox
+                                                edge="start"
+                                                checked={checked.indexOf(file) !== -1}
+                                                tabIndex={-1}
+                                                disableRipple
+                                                inputProps={{ 'aria-labelledby': file }}
+                                            />
+                                        </ListItemIcon>
+                                        <ListItemText id={file} primary={file} style={{maxWidth: "65%"}} />
+                                        <ListItemSecondaryAction>
+                                            <Button
+                                                startIcon={<GetAppIcon />}
+                                                onClick={() => downloadFile(file)}
+                                            ></Button>
+                                            <Button
+                                                startIcon={<DeleteIcon />}
+                                                onClick={() => removeFiles([file])}
+                                            ></Button>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                ))
+                            }
+                            </List>
+                        </DialogContent>
+                        <DialogContent dividers>
+                            <div className={classes.toEnd}>
+                                <Button
+                                    variant="contained"
+                                    color="default"
+                                    className={classes.button}
+                                    startIcon={<CloudDownloadIcon />}
+                                    onClick={() => downloadAll()}
+                                    disabled={checked.length === 0}
+                                >
+                                    Download
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    className={classes.button}
+                                    startIcon={<DeleteIcon />}
+                                    onClick={() => removeFiles(checked)}
+                                    disabled={checked.length === 0}
+                                >
+                                    Delete
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    <Button 
+                        variant="contained"
+                        color="default"
+                        className={classes.button}
+                        onClick={themeToggler}
+                    >
+                        <Toggle theme={theme} toggleTheme={themeToggler} />
+                        <Hidden xsDown>Dark</Hidden>
+                    </Button>
+                </div>
+                </Toolbar>
+            </AppBar>
+        </div>
+    )
 }
 
-export default withStyles(styles)(Navbar);
+export default Navbar

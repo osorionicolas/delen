@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import './App.css';
 import HomePage from './pages/HomePage/HomePage';
 import { ThemeProvider } from "styled-components";
@@ -6,43 +6,25 @@ import { GlobalStyles } from "./components/Theme/GlobalStyles";
 import { lightTheme, darkTheme } from "./components/Theme/Theme"
 import Navbar from './components/Navbar';
 
-class App extends React.Component {
-  
-  constructor(props) {
-    super(props);
-    
-    const localTheme = window.localStorage.getItem('theme') || "light";
-    
-    this.state = {
-      theme: localTheme
-    };
+const App = () => {
+  const localTheme = localStorage.theme || "light";
+  const [theme, setTheme] = useState(localTheme)
+  const themeMode = theme === 'light' ? lightTheme : darkTheme;
 
-    this.themeToggler = this.themeToggler.bind(this);
+  const themeToggler = () => theme === 'light' ? setMode('dark') : setMode('light')
+
+  const setMode = (mode) => {
+    localStorage.setItem('theme', mode)
+    setTheme(mode)
   }
 
-  themeToggler(){
-    this.state.theme === 'light' ? this.setMode('dark') : this.setMode('light')
-  }
-
-  setMode = (mode) => {
-    window.localStorage.setItem('theme', mode)
-    this.setState({
-      theme: mode
-    })
-  };
-
-  render() {
-    const theme = this.state.theme;
-    const themeMode = theme === 'light' ? lightTheme : darkTheme;
-
-    return (
-      <ThemeProvider theme={themeMode}>
-        <GlobalStyles/>
-        <Navbar theme={theme} themeToggler={this.themeToggler} />
-        <HomePage theme={theme}/>
-      </ThemeProvider>
-    );
-  }
+  return (
+    <ThemeProvider theme={themeMode}>
+      <GlobalStyles/>
+      <Navbar theme={theme} themeToggler={themeToggler} />
+      <HomePage />
+    </ThemeProvider>
+  )
 }
 
 export default App;

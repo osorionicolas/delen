@@ -1,54 +1,42 @@
-import React from 'react';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import './HomePage.css';
-import { SERVER_ADDRESS } from '../../constants';
+import React, { useState, useEffect } from 'react'
+import TextareaAutosize from '@material-ui/core/TextareaAutosize'
+import './HomePage.css'
+import { SERVER_ADDRESS } from '../../config/environment'
+import { withStyles  } from '@material-ui/core/styles'
 
-class HomePage extends React.Component {
+const styles = () => ({
+    dialog: {
+        height: "57vh !important",
+        margin: "17vh 10vw",
+        width: "79vw !important"
+    },
+})
 
-    constructor(props) {
-        super(props);
+const HomePage = (props) => {
+    const [value, setValue] = useState("")
+    const { classes } = props;
 
-        this.state = {
-            value: "",
-        }  
-    }
-
-    componentDidMount(){
+    useEffect(() => {
         fetch(`http://${SERVER_ADDRESS}/text`)
             .then(response => response.text())
-            .then(data => 
-                this.setState({
-                    value: data
-                })
-            )
-    }
+            .then(data => setValue(data))
+    }, [])
     
-    handleChange = (event) => {
-        const { value } = event.target;
-        this.setState({
-            value: value
-        });
-    }
+    const handleChange = (event) => setValue(event.target.value)
 
-
-    handleBlur = (event) => {
+    const handleBlur = (event) => {
         const { value } = event.target;
         fetch(`http://${SERVER_ADDRESS}/text`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: value
         })
-        this.setState({
-            value: value
-        })
+        setValue(value)
     }    
-
-    render() {
-        const { theme } = this.props;
-        return (
-            <TextareaAutosize onBlur={this.handleBlur} className={theme} id="textArea" rowsMin={30} value={this.state.value} onChange={this.handleChange} />
-        )
-    }
+    
+    return (
+        <TextareaAutosize onBlur={handleBlur} className={classes.dialog} id="textArea" rowsMin={30} value={value} onChange={handleChange} />
+    )
 }
 
-export default HomePage;
+export default withStyles(styles)(HomePage);

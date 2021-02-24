@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import Toggle from './Toggle';
-import { AppBar, Toolbar, Typography, Button, Dialog, DialogTitle, DialogContent, Hidden } from '@material-ui/core';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { DropzoneDialog } from 'material-ui-dropzone';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import download from 'downloadjs';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { SERVER_ADDRESS } from '../config/environment';
-import Loader from 'react-loader-spinner';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import React, { useState, useEffect } from 'react'
+import Toggle from './Toggle'
+import { AppBar, Toolbar, Typography, Button, Dialog, DialogTitle, DialogContent, Hidden, List, ListItem, ListItemText, ListItemIcon, Collapse, TextField, Snackbar } from '@material-ui/core'
+import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
+import { DropzoneAreaBase } from 'material-ui-dropzone'
+import download from 'downloadjs'
+import DeleteIcon from '@material-ui/icons/Delete'
+import { SERVER_ADDRESS } from '../config/environment'
+import Loader from 'react-loader-spinner'
+import Checkbox from '@material-ui/core/Checkbox'
+import { makeStyles } from '@material-ui/core/styles'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import { ExpandLess, ExpandMore } from '@material-ui/icons'
+import FolderIcon from '@material-ui/icons/Folder'
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete'
+import { Alert } from '@material-ui/lab'
 
 const styles = makeStyles((theme) => ({
     button: {
@@ -26,19 +24,6 @@ const styles = makeStyles((theme) => ({
 
     toEnd: {
         float: "right"
-    },
-
-    fileName: {
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        width: "16vh",
-        display: "inline-block"
-    },
-
-    file: {
-        display: "flow-root",
-        marginBottom: "10px",
-        borderBottom: "groove"
     },
 
     loader: {
@@ -56,47 +41,79 @@ const styles = makeStyles((theme) => ({
         zIndex: 9999,
         opacity: 0.7
     },
-
-    label: {
-        marginLeft: "10px"
-    }
+    
+    nested: {
+        paddingLeft: theme.spacing(4),
+    },
 }))
 
 const Navbar = (props) => {
     const classes = styles()
-    const [checked, setChecked] = useState([]);
+    const [checked, setChecked] = useState([])
     const [openUploads, setOpenUploads] = useState(false)
     const [openDownloads, setOpenDownloads] = useState(false)
     const [downloadableFiles, setDownloadableFiles] = useState([])
     const [loading, setLoading] = useState(false)
     const [selectAll, setSelectAll] = useState(false)
+    const [open, setOpen] = useState(false)
+    const [files, setFiles] = useState([])
+    const [path, setPath] = useState(null)
+    const [uploadFileAlert, setUploadFileAlert] = useState(false)
+
     const { theme, themeToggler } = props
+
+    const filter = createFilterOptions()
  
-    const handleSave = (files) => {
-        //Saving files to state for further use and closing Modal.
-        setOpenUploads(false)
+    const handleSave = () => {
         files.forEach(file => {
             const data = new FormData()
-            data.append("file", file)
-            fetch(`http://${SERVER_ADDRESS}/files`, {
+            data.append("file", file.file)
+            let query = ""
+            if(path) query = `?path=${path.inputValue}`
+            fetch(`http://${SERVER_ADDRESS}/files${query}`, {
                 method: 'POST',
                 body: data
             })
         })
+        setUploadFileAlert(true)
+        setOpenUploads(false)
+        setPath(null)
     }
+
+    const handleClick = () => setOpen(!open)
 
     const getDownloadableFiles = async () => {
-        const downloadedFiles = await fetch(`http://${SERVER_ADDRESS}/files`)
+        const files = await fetch(`http://${SERVER_ADDRESS}/files`)
             .then(response => response.json())
             .then(data => data)
-        setDownloadableFiles(downloadedFiles)
+        setDownloadableFiles(files)
     }
 
-    const downloadFile = async (file) => {
+    const getFiles = (files) => {
+        const downloadedFiles = files.map(file => {
+            if(file.type === "directory" && file.children.length > 0) {
+                return file.children.map(child => child)
+            }
+            else if(file.type === "file") {
+                return file
+            }
+            return null
+        }).filter(Boolean)
+        return downloadedFiles.flat()
+    }
+
+    const getFolders = (files) =>
+        files.map(file => (file.type === "directory") ? file : null)
+             .filter(Boolean)
+             .map(file => ({inputValue: file.name, label: file.name}))
+
+    const downloadFiles = () => {
         setLoading(true)
-        const res = await fetch(`http://${SERVER_ADDRESS}/files/` + file)
-        const blob = await res.blob()
-        download(blob, file)
+        checked.forEach(async file => {
+            const res = await fetch(`http://${SERVER_ADDRESS}/files/${file.name}?path=${file.path}`)
+            const blob = await res.blob()
+            download(blob, file.name)
+        })
         setLoading(false)
     }
 
@@ -104,7 +121,7 @@ const Navbar = (props) => {
         const response = window.confirm("You are about to delete some files, are you sure you want it?")
         if(response) {
             files.forEach(file => {
-                fetch(`http://${SERVER_ADDRESS}/files/` + file, {
+                fetch(`http://${SERVER_ADDRESS}/files?path=${file.path}`, {
                     method: 'DELETE'
                 }).then(setTimeout(() => getDownloadableFiles(), 500))
             })
@@ -122,7 +139,6 @@ const Navbar = (props) => {
     const handleToggle = (value) => {
         const currentIndex = checked.indexOf(value)
         const newChecked = [...checked]
-  
         if(currentIndex === -1) {
             newChecked.push(value)
         }
@@ -133,16 +149,12 @@ const Navbar = (props) => {
         setChecked(newChecked)
     }
 
-    const downloadAll = () => {
-        checked.forEach(file => downloadFile(file))
-    }
-
     useEffect(() => {
         setChecked([])
         if(selectAll) {
-            setChecked(downloadableFiles)
+            setChecked(getFiles(downloadableFiles))
         }
-        else if(checked.length > 0 && checked.length !== downloadableFiles.length) {
+        else if(checked.length > 0 && checked.length !== getFiles(downloadableFiles).length) {
             setChecked(checked)
         }
     // eslint-disable-next-line
@@ -154,15 +166,19 @@ const Navbar = (props) => {
         getDownloadableFiles()
     }, [openDownloads])
 
+    useEffect(() => setFiles([]), [openUploads])
+
     //TODO Mover el Loader a donde corresponda
     return (
         <div className="flexGrow">
             { (loading) ? <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div>  : "" }
             <AppBar position="static">
                 <Toolbar variant="dense">
-                <Typography variant="h6" color="inherit" className="flexGrow">
-                    Delen
-                </Typography>
+                <Hidden xsDown>
+                    <Typography variant="h6" color="inherit" className="flexGrow">
+                        Delen
+                    </Typography>
+                </Hidden>
                 <div>
                     <Button
                         variant="contained"
@@ -180,17 +196,79 @@ const Navbar = (props) => {
                         startIcon={<CloudUploadIcon />}
                         onClick={() => setOpenUploads(true)}
                     >
-                        <Hidden xsDown>Upload</Hidden>   
+                        <Hidden xsDown>Upload</Hidden> 
                     </Button>
-                    <DropzoneDialog
-                        acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
-                        open={openUploads}
-                        onSave={handleSave}
-                        showPreviews={true}
-                        maxFileSize={500000000}
-                        onClose={() => setOpenUploads(false)}
-                        filesLimit={50}
-                    />        
+                    <Dialog fullWidth={true} onClose={() => setOpenUploads(false)} aria-labelledby="dialog-title" open={openUploads}>
+                        <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Upload files</DialogTitle>
+                            <div style={{display: "flex", marginLeft: "23px"}}>
+                            <Autocomplete
+                                value={path}
+                                onChange={(event, newValue) => setPath(newValue)}
+                                filterOptions={(options, params) => {
+                                    const filtered = filter(options, params)
+                                    if (params.inputValue !== '') {
+                                        filtered.push({
+                                            inputValue: params.inputValue,
+                                            label: `Create folder "${params.inputValue}"`,
+                                        })
+                                    }
+                                    return filtered;
+                                }}
+                                id="destination-folder"
+                                options={getFolders(downloadableFiles)}
+                                getOptionLabel={(option) => (option.inputValue) ? option.inputValue : option.label}
+                                selectOnFocus
+                                clearOnBlur
+                                handleHomeEndKeys
+                                renderOption={(option) => option.label}
+                                style={{ width: 300 }}
+                                freeSolo
+                                renderInput={(params) => (
+                                    <TextField {...params} size="small" label="Destination folder" variant="outlined" />
+                                )}
+                            />
+                            </div>
+                            <DialogContent dividers>
+                                <DropzoneAreaBase
+                                    acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
+                                    maxFileSize={500000000}
+                                    filesLimit={50}
+                                    useChipsForPreview
+                                    previewGridProps={{container: { spacing: 1, direction: 'row' }}}
+                                    showAlerts={['error', 'info']}
+                                    dropzoneText={files.length === 0 ? "Drag and drop a file here or click" : ""}
+                                    fileObjects={files}
+                                    onAdd={newFiles => setFiles(prev => prev.concat(newFiles))}
+                                    onDelete={fileDeleted => setFiles(prev => prev.filter(file => file !== fileDeleted))}
+                                />
+                            </DialogContent>
+                            <DialogContent dividers>
+                            <div className={classes.toEnd}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    className={classes.button}
+                                    onClick={() => setOpenUploads(false)}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.button}
+                                    onClick={() => handleSave()}
+                                    disabled={files.length === 0}
+                                >
+                                    Submit
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    <Snackbar open={uploadFileAlert} autoHideDuration={6000} onClose={() => setUploadFileAlert(false)}>
+                        <Alert onClose={() => setUploadFileAlert(false)} severity="success">
+                            Files uploaded successfully!
+                        </Alert>
+                    </Snackbar>
                     <Button
                         variant="contained"
                         color="default"
@@ -202,41 +280,72 @@ const Navbar = (props) => {
                     </Button>
                     <Dialog fullWidth={true} onClose={() => setOpenDownloads(false)} aria-labelledby="dialog-title" open={openDownloads}>
                         <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Uploaded files</DialogTitle>
-                        <div style={{display: "flex", marginLeft: "38px"}}>
+                        <div style={{display: "flex", marginLeft: "23px"}}>
                             <FormControlLabel
                                 control={<Checkbox checked={selectAll} onChange={() => setSelectAll(!selectAll)} name="checkedA" />}
-                                label="Select all"
                                 classes={{label: "label"}}
                             />
-                            <Typography style={{ textAlign: "right", marginRight: "28px", alignSelf: "center"}} variant="subtitle1" color="inherit" className="flexGrow">There are {downloadableFiles.length} file/s</Typography>
+                            <Typography style={{ textAlign: "right", marginRight: "28px", alignSelf: "center"}} variant="subtitle1" color="inherit" className="flexGrow">There are {getFiles(downloadableFiles).length} file/s</Typography>
                         </div>
                         <DialogContent dividers>
                             <List>
                             {
-                                downloadableFiles.map(file => (
-                                    <ListItem key={file}dense button onClick={() => handleToggle(file)}>
-                                        <ListItemIcon>
-                                            <Checkbox
-                                                edge="start"
-                                                checked={checked.indexOf(file) !== -1}
-                                                tabIndex={-1}
-                                                disableRipple
-                                                inputProps={{ 'aria-labelledby': file }}
-                                            />
-                                        </ListItemIcon>
-                                        <ListItemText id={file} primary={file} style={{maxWidth: "65%"}} />
-                                        <ListItemSecondaryAction>
-                                            <Button
-                                                startIcon={<GetAppIcon />}
-                                                onClick={() => downloadFile(file)}
-                                            ></Button>
-                                            <Button
-                                                startIcon={<DeleteIcon />}
-                                                onClick={() => removeFiles([file])}
-                                            ></Button>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                ))
+                                downloadableFiles.map(file => {
+                                    const filename = file.name
+                                    if(file.type === "directory" && file.children.length > 0){
+                                        return (
+                                            <>
+                                            <ListItem key={filename} button disableGutters dense onClick={handleClick}>
+                                                <ListItemIcon>
+                                                    <FolderIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={filename} />
+                                                {open ? <ExpandLess /> : <ExpandMore />}
+                                            </ListItem>
+                                            <Collapse in={open} timeout="auto" unmountOnExit>
+                                                <List component="div" disablePadding>
+                                                {
+                                                    file.children.map(child => {
+                                                        const childname = child.name
+                                                        return ( 
+                                                            <ListItem key={childname} className={classes.nested} button disableGutters dense onClick={() => handleToggle(child)}>
+                                                                <ListItemIcon>
+                                                                    <Checkbox
+                                                                        edge="start"
+                                                                        checked={checked.indexOf(child) !== -1}
+                                                                        tabIndex={-1}
+                                                                        disableRipple
+                                                                        inputProps={{ 'aria-labelledby': childname }}
+                                                                    />
+                                                                </ListItemIcon>
+                                                                <ListItemText primary={childname} />
+                                                            </ListItem>
+                                                        )
+                                                    })
+                                                }
+                                                </List>
+                                            </Collapse>
+                                            </>
+                                        )
+                                    }
+                                    else if(file.type === "file") {
+                                        return (
+                                            <ListItem key={filename} dense button disableGutters onClick={() => handleToggle(file)}>
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                        edge="start"
+                                                        checked={checked.indexOf(file) !== -1}
+                                                        tabIndex={-1}
+                                                        disableRipple
+                                                        inputProps={{ 'aria-labelledby': filename }}
+                                                    />
+                                                </ListItemIcon>
+                                                <ListItemText id={filename} primary={filename} />
+                                            </ListItem>
+                                            )
+                                    }
+                                    return null
+                                })
                             }
                             </List>
                         </DialogContent>
@@ -247,7 +356,7 @@ const Navbar = (props) => {
                                     color="default"
                                     className={classes.button}
                                     startIcon={<CloudDownloadIcon />}
-                                    onClick={() => downloadAll()}
+                                    onClick={() => downloadFiles()}
                                     disabled={checked.length === 0}
                                 >
                                     Download

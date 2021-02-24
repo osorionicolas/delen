@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import { SERVER_ADDRESS } from '../../config/environment'
-import { withStyles  } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles';
 
-const styles = () => ({
+const styles = makeStyles(() => ({
     dialog: {
         height: "57vh !important",
         margin: "17vh 10vw",
         width: "79vw !important"
     },
-})
+}))
 
-const HomePage = (props) => {
+const HomePage = () => {
+    const classes = styles()
     const [value, setValue] = useState("")
-    const { classes } = props;
 
     useEffect(() => {
         fetch(`http://${SERVER_ADDRESS}/text`)
@@ -38,4 +38,4 @@ const HomePage = (props) => {
     )
 }
 
-export default withStyles(styles)(HomePage);
+export default HomePage

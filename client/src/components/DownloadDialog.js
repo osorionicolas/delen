@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, List, ListItemIcon, Typography } from '@material-ui/core'
+import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import download from 'downloadjs'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
@@ -22,15 +22,11 @@ const styles = makeStyles((theme) => ({
     }
 }))
 
-const DownloadDialog = ({files}) => {
+const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownloadableFiles}) => {
     const classes = styles()
     const [checked, setChecked] = useState([])
-    const [openDownloads, setOpenDownloads] = useState(false)
-    const [downloadableFiles, setDownloadableFiles] = useState([])
     const [selectAll, setSelectAll] = useState(false)
-    const [open, setOpen] = useState(false)
-
-    const handleClick = () => setOpen(!open)
+    const [openFolder, setOpenFolder] = useState(false)
 
     const getDownloadableFiles = async () => {
         const files = await fetch(`http://${SERVER_ADDRESS}/files`)
@@ -96,16 +92,16 @@ const DownloadDialog = ({files}) => {
             setChecked(checked)
         }
     // eslint-disable-next-line
-    }, [selectAll, downloadableFiles])
+    }, [selectAll])
 
     useEffect(() => {
         setSelectAll(false)
         setChecked([])
         getDownloadableFiles()
-    }, [openDownloads])
+    }, [open])
 
     return (
-        <Dialog fullWidth={true} onClose={() => setOpenDownloads(false)} aria-labelledby="dialog-title" open={openDownloads}>
+        <Dialog fullWidth={true} onClose={() => setOpen(false)} aria-labelledby="dialog-title" open={open}>
             <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Uploaded files</DialogTitle>
             <div style={{display: "flex", marginLeft: "23px"}}>
                 <FormControlLabel
@@ -122,7 +118,7 @@ const DownloadDialog = ({files}) => {
                         if(file.type === "directory" && file.children.length > 0){
                             return (
                                 <>
-                                <ListItem key={filename} button disableGutters dense onClick={handleClick}>
+                                <ListItem key={filename} button disableGutters dense onClick={setOpenFolder(!openFolder)}>
                                     <ListItemIcon>
                                         <FolderIcon />
                                     </ListItemIcon>

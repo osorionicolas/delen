@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Dialog, DialogContent, DialogTitle, Snackbar, TextField } from '@material-ui/core'
-import { Alert, Autocomplete } from '@material-ui/lab'
+import { Alert, Autocomplete, createFilterOptions } from '@material-ui/lab'
 import { DropzoneAreaBase } from 'material-ui-dropzone'
 import { SERVER_ADDRESS } from '../config/environment'
 
@@ -15,9 +15,8 @@ const styles = makeStyles((theme) => ({
     }
 }))
 
-const UploadDialog = (props) => {
+const UploadDialog = ({open, setOpen, downloadableFiles}) => {
     const classes = styles()
-    const [openUploads, setOpenUploads] = useState(false)
     const [path, setPath] = useState(null)
     const [files, setFiles] = useState([])
     const [uploadFileAlert, setUploadFileAlert] = useState(false)
@@ -36,7 +35,7 @@ const UploadDialog = (props) => {
             })
         })
         setUploadFileAlert(true)
-        setOpenUploads(false)
+        setOpen(false)
         setPath(null)
     }
 
@@ -45,11 +44,11 @@ const UploadDialog = (props) => {
              .filter(Boolean)
              .map(file => ({inputValue: file.name, label: file.name}))
 
-    useEffect(() => setFiles([]), [openUploads])
+    useEffect(() => setFiles([]), [open])
 
     return (
         <>
-        <Dialog fullWidth={true} onClose={() => setOpenUploads(false)} aria-labelledby="dialog-title" open={openUploads}>
+        <Dialog fullWidth={true} onClose={() => setOpen(false)} aria-labelledby="dialog-title" open={open}>
             <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Upload files</DialogTitle>
                 <div style={{display: "flex", marginLeft: "23px"}}>
                 <Autocomplete
@@ -99,7 +98,7 @@ const UploadDialog = (props) => {
                         variant="contained"
                         color="secondary"
                         className={classes.button}
-                        onClick={() => setOpenUploads(false)}
+                        onClick={() => setOpen(false)}
                     >
                         Cancel
                     </Button>

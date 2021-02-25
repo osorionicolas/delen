@@ -98,7 +98,7 @@ const UploadDialog = ({open, setOpen, downloadableFiles}) => {
                             variant="contained"
                             color="secondary"
                             className={classes.button}
-                            onClick={() => setOpenUploads(false)}
+                            onClick={() => setOpen(false)}
                         >
                             Cancel
                         </Button>

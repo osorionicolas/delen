@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Toggle from './Toggle'
-import { AppBar, Toolbar, Typography, Button, Dialog, DialogTitle, DialogContent, Hidden, List, ListItem, ListItemText, ListItemIcon, Collapse, TextField, Snackbar } from '@material-ui/core'
+import { AppBar, Toolbar, Typography, Button, Dialog, DialogTitle, DialogContent, Hidden, List, ListItem, ListItemText, ListItemIcon, Collapse, TextField, Snackbar, Grid } from '@material-ui/core'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
@@ -20,10 +20,6 @@ import { Alert } from '@material-ui/lab'
 const styles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1)
-    },
-
-    toEnd: {
-        float: "right"
     },
 
     loader: {
@@ -200,7 +196,7 @@ const Navbar = (props) => {
                     </Button>
                     <Dialog fullWidth={true} onClose={() => setOpenUploads(false)} aria-labelledby="dialog-title" open={openUploads}>
                         <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Upload files</DialogTitle>
-                            <div style={{display: "flex", marginLeft: "23px"}}>
+                        <div style={{display: "flex", marginLeft: "23px"}}>
                             <Autocomplete
                                 value={path}
                                 onChange={(event, newValue) => setPath(newValue)}
@@ -227,23 +223,23 @@ const Navbar = (props) => {
                                     <TextField {...params} size="small" label="Destination folder" variant="outlined" />
                                 )}
                             />
-                            </div>
-                            <DialogContent dividers>
-                                <DropzoneAreaBase
-                                    acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
-                                    maxFileSize={500000000}
-                                    filesLimit={50}
-                                    useChipsForPreview
-                                    previewGridProps={{container: { spacing: 1, direction: 'row' }}}
-                                    showAlerts={['error', 'info']}
-                                    dropzoneText={files.length === 0 ? "Drag and drop a file here or click" : ""}
-                                    fileObjects={files}
-                                    onAdd={newFiles => setFiles(prev => prev.concat(newFiles))}
-                                    onDelete={fileDeleted => setFiles(prev => prev.filter(file => file !== fileDeleted))}
-                                />
-                            </DialogContent>
-                            <DialogContent dividers>
-                            <div className={classes.toEnd}>
+                        </div>
+                        <DialogContent dividers>
+                            <DropzoneAreaBase
+                                acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
+                                maxFileSize={500000000}
+                                filesLimit={50}
+                                useChipsForPreview
+                                previewGridProps={{container: { spacing: 1, direction: 'row' }}}
+                                showAlerts={['error', 'info']}
+                                dropzoneText={files.length === 0 ? "Drag and drop a file here or click" : ""}
+                                fileObjects={files}
+                                onAdd={newFiles => setFiles(prev => prev.concat(newFiles))}
+                                onDelete={fileDeleted => setFiles(prev => prev.filter(file => file !== fileDeleted))}
+                            />
+                        </DialogContent>
+                        <Grid container justify="flex-end">
+                            <Grid item>
                                 <Button
                                     variant="contained"
                                     color="secondary"
@@ -252,6 +248,8 @@ const Navbar = (props) => {
                                 >
                                     Cancel
                                 </Button>
+                            </Grid>
+                            <Grid item>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -261,8 +259,8 @@ const Navbar = (props) => {
                                 >
                                     Submit
                                 </Button>
-                            </div>
-                        </DialogContent>
+                            </Grid>
+                        </Grid>
                     </Dialog>
                     <Snackbar open={uploadFileAlert} autoHideDuration={6000} onClose={() => setUploadFileAlert(false)}>
                         <Alert onClose={() => setUploadFileAlert(false)} severity="success">
@@ -348,9 +346,10 @@ const Navbar = (props) => {
                                 })
                             }
                             </List>
+                            
                         </DialogContent>
-                        <DialogContent dividers>
-                            <div className={classes.toEnd}>
+                        <Grid container justify="flex-end">
+                            <Grid item>
                                 <Button
                                     variant="contained"
                                     color="default"
@@ -361,6 +360,8 @@ const Navbar = (props) => {
                                 >
                                     Download
                                 </Button>
+                            </Grid>
+                            <Grid item>
                                 <Button
                                     variant="contained"
                                     color="secondary"
@@ -371,8 +372,8 @@ const Navbar = (props) => {
                                 >
                                     Delete
                                 </Button>
-                            </div>
-                        </DialogContent>
+                            </Grid>
+                        </Grid>
                     </Dialog>
                     <Button 
                         variant="contained"

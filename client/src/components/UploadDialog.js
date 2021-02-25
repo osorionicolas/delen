@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Dialog, DialogContent, DialogTitle, Snackbar, TextField } from '@material-ui/core'
+import { Button, Dialog, DialogContent, DialogTitle, Grid, Snackbar, TextField } from '@material-ui/core'
 import { Alert, Autocomplete, createFilterOptions } from '@material-ui/lab'
 import { DropzoneAreaBase } from 'material-ui-dropzone'
 import { SERVER_ADDRESS } from '../config/environment'
@@ -92,27 +92,29 @@ const UploadDialog = ({open, setOpen, downloadableFiles}) => {
                         onDelete={fileDeleted => setFiles(prev => prev.filter(file => file !== fileDeleted))}
                     />
                 </DialogContent>
-                <DialogContent dividers>
-                <div className={classes.toEnd}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        className={classes.button}
-                        onClick={() => setOpen(false)}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.button}
-                        onClick={() => handleSave()}
-                        disabled={files.length === 0}
-                    >
-                        Submit
-                    </Button>
-                </div>
-            </DialogContent>
+                <Grid container justify="flex-end">
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            className={classes.button}
+                            onClick={() => setOpenUploads(false)}
+                        >
+                            Cancel
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                            onClick={() => handleSave()}
+                            disabled={files.length === 0}
+                        >
+                            Submit
+                        </Button>
+                    </Grid>
+                </Grid>
         </Dialog>
         <Snackbar open={uploadFileAlert} autoHideDuration={6000} onClose={() => setUploadFileAlert(false)}>
             <Alert onClose={() => setUploadFileAlert(false)} severity="success">

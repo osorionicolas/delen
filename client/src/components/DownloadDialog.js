@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
+import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import download from 'downloadjs'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
@@ -172,8 +172,8 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
                 }
                 </List>
             </DialogContent>
-            <DialogContent dividers>
-                <div className={classes.toEnd}>
+            <Grid container justify="flex-end">
+                <Grid item>
                     <Button
                         variant="contained"
                         color="default"
@@ -184,6 +184,8 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
                     >
                         Download
                     </Button>
+                </Grid>
+                <Grid item>
                     <Button
                         variant="contained"
                         color="secondary"
@@ -194,8 +196,8 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
                     >
                         Delete
                     </Button>
-                </div>
-            </DialogContent>
+                </Grid>
+            </Grid>
         </Dialog>
     )
 }

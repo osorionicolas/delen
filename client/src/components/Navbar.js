@@ -87,6 +87,7 @@ const Navbar = (props) => {
                         <Hidden xsDown>Download</Hidden>
                     </Button>
                     <DownloadDialog open={openDownloads} setLoading={setLoading} setOpen={setOpenDownloads} downloadableFiles={downloadableFiles} setDownloadableFiles={setDownloadableFiles}/>
+
                     <Button 
                         variant="contained"
                         color="default"

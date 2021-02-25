@@ -4,16 +4,17 @@ import { AppBar, Toolbar, Typography, Button, Hidden } from '@material-ui/core'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
-import Loader from 'react-loader-spinner'
 import { makeStyles } from '@material-ui/core/styles'
 import DownloadDialog from './DownloadDialog'
 import UploadDialog from './UploadDialog'
+import { SERVER_ADDRESS } from '../config/environment'
+import Loader from 'react-loader-spinner'
 
 const styles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1)
     },
-
+    
     loader: {
         position: "fixed",
         top: "50%",
@@ -33,10 +34,10 @@ const styles = makeStyles((theme) => ({
 
 const Navbar = (props) => {
     const classes = styles()
-    const [loading, setLoading] = useState(false)
     const [openUploads, setOpenUploads] = useState(false)
     const [openDownloads, setOpenDownloads] = useState(false)
     const [downloadableFiles, setDownloadableFiles] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const { theme, themeToggler } = props
 
@@ -46,10 +47,17 @@ const Navbar = (props) => {
         copyText.setSelectionRange(0, 99999)
         document.execCommand("copy")
     }
+
+    const getDownloadableFiles = async () => {
+        const files = await fetch(`http://${SERVER_ADDRESS}/files`)
+            .then(response => response.json())
+            .then(data => data)
+        setDownloadableFiles(files)
+    }
     
     return (
         <div className="flexGrow">
-            { (loading) ? <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div>  : "" }
+            { loading && <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div> }
             <AppBar position="static">
                 <Toolbar variant="dense">
                 <Hidden xsDown>
@@ -86,8 +94,7 @@ const Navbar = (props) => {
                     >
                         <Hidden xsDown>Download</Hidden>
                     </Button>
-                    <DownloadDialog open={openDownloads} setLoading={setLoading} setOpen={setOpenDownloads} downloadableFiles={downloadableFiles} setDownloadableFiles={setDownloadableFiles}/>
-
+                    <DownloadDialog open={openDownloads} setOpen={setOpenDownloads} setLoading={setLoading} downloadableFiles={downloadableFiles} getDownloadableFiles={getDownloadableFiles}/>
                     <Button 
                         variant="contained"
                         color="default"

@@ -12,31 +12,19 @@ const styles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1)
     },
-
-    toEnd: {
-        float: "right"
-    },
     
     nested: {
         paddingLeft: theme.spacing(4),
-    }
+    },
 }))
 
-const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownloadableFiles}) => {
+const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownloadableFiles}) => {
     const classes = styles()
     const [checked, setChecked] = useState([])
     const [selectAll, setSelectAll] = useState(false)
     const [openFolder, setOpenFolder] = useState(false)
 
-    const getDownloadableFiles = async () => {
-        const files = await fetch(`http://${SERVER_ADDRESS}/files`)
-            .then(response => response.json())
-            .then(data => data)
-        setDownloadableFiles(files)
-    }
-
-    const getFiles = (files) => {
-        const downloadedFiles = files.map(file => {
+    const getFiles = (files) => files.map(file => {
             if(file.type === "directory" && file.children.length > 0) {
                 return file.children.map(child => child)
             }
@@ -44,9 +32,7 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
                 return file
             }
             return null
-        }).filter(Boolean)
-        return downloadedFiles.flat()
-    }
+        }).filter(Boolean).flat()
 
     const downloadFiles = () => {
         setLoading(true)
@@ -55,6 +41,7 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
             const blob = await res.blob()
             download(blob, file.name)
         })
+        //Parecería que no funciona
         setLoading(false)
     }
 
@@ -98,6 +85,7 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
         setSelectAll(false)
         setChecked([])
         getDownloadableFiles()
+    // eslint-disable-next-line
     }, [open])
 
     return (
@@ -118,14 +106,14 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
                         if(file.type === "directory" && file.children.length > 0){
                             return (
                                 <>
-                                <ListItem key={filename} button disableGutters dense onClick={setOpenFolder(!openFolder)}>
+                                <ListItem key={filename} button disableGutters dense onClick={() => setOpenFolder(!openFolder)}>
                                     <ListItemIcon>
                                         <FolderIcon />
                                     </ListItemIcon>
                                     <ListItemText primary={filename} />
-                                    {open ? <ExpandLess /> : <ExpandMore />}
+                                    {openFolder ? <ExpandLess /> : <ExpandMore />}
                                 </ListItem>
-                                <Collapse in={open} timeout="auto" unmountOnExit>
+                                <Collapse in={openFolder} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                     {
                                         file.children.map(child => {

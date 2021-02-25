@@ -9,10 +9,6 @@ const styles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1)
     },
-
-    toEnd: {
-        float: "right"
-    }
 }))
 
 const UploadDialog = ({open, setOpen, downloadableFiles}) => {
@@ -44,7 +40,9 @@ const UploadDialog = ({open, setOpen, downloadableFiles}) => {
              .filter(Boolean)
              .map(file => ({inputValue: file.name, label: file.name}))
 
-    useEffect(() => setFiles([]), [open])
+    useEffect(() => {
+        setFiles([])
+    }, [open])
 
     return (
         <>

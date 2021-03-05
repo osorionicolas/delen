@@ -47,7 +47,8 @@ app.get("/files", (req, res) => {
 
 app.get("/files/:file", (req, res) => {
 	const file = req.params.file
-	const path = req.query.path
+	let path = req.query.path
+	if(!path) path = `${dirPath}/${file}`
 	console.log("Looking for file " + path);
 	res.download(path, file);
 });

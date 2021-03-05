@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
+import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, Grid, List, ListItem, ListItemIcon, ListItemText, Typography, IconButton, ListItemSecondaryAction } from '@material-ui/core'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import download from 'downloadjs'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FolderIcon from '@material-ui/icons/Folder'
 import { SERVER_ADDRESS } from '../config/environment'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 
 const styles = makeStyles((theme) => ({
     button: {
@@ -130,6 +131,11 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownlo
                                                         />
                                                     </ListItemIcon>
                                                     <ListItemText primary={childname} />
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton edge="end" aria-label="copy" onClick={() => navigator.clipboard.writeText(`http://${SERVER_ADDRESS}/files/${filename}?path=${file.path}`)}>
+                                                            <FileCopyIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
                                                 </ListItem>
                                             )
                                         })
@@ -152,6 +158,11 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownlo
                                         />
                                     </ListItemIcon>
                                     <ListItemText id={filename} primary={filename} />
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge="end" aria-label="copy" onClick={() => navigator.clipboard.writeText(`http://${SERVER_ADDRESS}/files/${filename}?path=${file.path}`)}>
+                                            <FileCopyIcon />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
                                 </ListItem>
                                 )
                         }

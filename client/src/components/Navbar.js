@@ -41,8 +41,6 @@ const Navbar = (props) => {
 
     const { theme, themeToggler } = props
 
-    const copyToClipboard = () => copy(document.getElementById("textArea").value)
-
     return (
         <div className="flexGrow">
             { loading && <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div> }
@@ -59,7 +57,7 @@ const Navbar = (props) => {
                         color="default"
                         className={classes.button}
                         startIcon={<FileCopyIcon />}
-                        onClick={copyToClipboard}
+                        onClick={() => copy(document.getElementById("textArea").value)}
                     >
                         <Hidden xsDown>Copy</Hidden>
                     </Button>

@@ -7,8 +7,8 @@ import FileCopyIcon from '@material-ui/icons/FileCopy'
 import { makeStyles } from '@material-ui/core/styles'
 import DownloadDialog from './DownloadDialog'
 import UploadDialog from './UploadDialog'
-import { SERVER_ADDRESS } from '../config/environment'
 import Loader from 'react-loader-spinner'
+import copy from 'copy-to-clipboard'
 
 const styles = makeStyles((theme) => ({
     button: {
@@ -41,20 +41,8 @@ const Navbar = (props) => {
 
     const { theme, themeToggler } = props
 
-    const copyToClipboard = () => {
-        var copyText = document.getElementById("textArea")
-        copyText.select()
-        copyText.setSelectionRange(0, 99999)
-        document.execCommand("copy")
-    }
+    const copyToClipboard = () => copy(document.getElementById("textArea").value)
 
-    const getDownloadableFiles = async () => {
-        const files = await fetch(`http://${SERVER_ADDRESS}/files`)
-            .then(response => response.json())
-            .then(data => data)
-        setDownloadableFiles(files)
-    }
-    
     return (
         <div className="flexGrow">
             { loading && <div className={classes.loaderBackground}><Loader className={classes.loader} type="Puff" color="#00BFFF" height={100} width={100}/></div> }
@@ -94,7 +82,7 @@ const Navbar = (props) => {
                     >
                         <Hidden xsDown>Download</Hidden>
                     </Button>
-                    <DownloadDialog open={openDownloads} setOpen={setOpenDownloads} setLoading={setLoading} downloadableFiles={downloadableFiles} getDownloadableFiles={getDownloadableFiles}/>
+                    <DownloadDialog open={openDownloads} setOpen={setOpenDownloads} setLoading={setLoading} downloadableFiles={downloadableFiles} setDownloadableFiles={setDownloadableFiles}/>
                     <Button 
                         variant="contained"
                         color="default"

@@ -164,7 +164,7 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownlo
                                     </ListItemIcon>
                                     <ListItemText id={filename} primary={filename} />
                                     <ListItemSecondaryAction>
-                                        <IconButton edge="end" aria-label="copy" onClick={() => navigator.clipboard.writeText(`http://${SERVER_ADDRESS}/files/${filename}?path=${file.path}`)}>
+                                        <IconButton edge="end" aria-label="copy" onClick={() => copy(`http://${SERVER_ADDRESS}/files/${filename}?path=${file.path}`)}>
                                             <FileCopyIcon />
                                         </IconButton>
                                     </ListItemSecondaryAction>

@@ -12,10 +12,8 @@ app.use(bp.urlencoded({ extended: false }))
 app.use(bp.text())
 app.use(express.static(path.join('build')));
 
-const dirPath = process.env.FILES_PATH || "./files"
-const port = process.env.PORT || 5000
-
-let text = ""
+const dirPath = process.env.FILES_PATH
+const port = process.env.PORT
 
 let storage = multer.diskStorage({
   destination: function(req, file, callback) {
@@ -84,7 +82,7 @@ app.get('/', function(req, res) {
 	if(fs.existsSync(front))
 		res.sendFile(path.join('build', 'index.html'));
 	else
-		res.redirect('http://localhost:3000')
+		res.redirect(process.env.FRONTEND_URL)
 });
 
 app.listen(port, () => {

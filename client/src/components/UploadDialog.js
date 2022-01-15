@@ -25,7 +25,7 @@ const UploadDialog = ({open, setOpen, downloadableFiles}) => {
             data.append("file", file.file)
             let query = ""
             if(path) query = `?path=${path.inputValue}`
-            fetch(`http://${SERVER_ADDRESS}/files${query}`, {
+            fetch(`${SERVER_ADDRESS}/files${query}`, {
                 method: 'POST',
                 body: data
             })
@@ -78,7 +78,7 @@ const UploadDialog = ({open, setOpen, downloadableFiles}) => {
                 </div>
                 <DialogContent dividers>
                     <DropzoneAreaBase
-                        acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
+                        acceptedFiles={["text/*", "image/*", "video/*", "application/*", "audio/*"]}
                         maxFileSize={500000000}
                         filesLimit={50}
                         useChipsForPreview

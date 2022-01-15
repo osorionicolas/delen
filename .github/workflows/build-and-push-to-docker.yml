@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+    - main
+    paths:
+      - 'client/**'
+      - 'server/**'
+env:
+  CONTAINER_IMAGE: secretcolossus/${{github.event.repository.name}}:latest
+jobs:
+  build-react:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Packages
+      run: npm install
+    - name: Build page
+      run: npm run build
+    - name: Move build
+      run: cp -r build ../server
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Docker Hub login
+      run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
+    - name: Build image 
+      run: docker build -t $CONTAINER_IMAGE .
+      working-directory: .
+    - name: Push to Docker Hub
+      run: docker push $CONTAINER_IMAGE

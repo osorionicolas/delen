@@ -1,10 +1,7 @@
 on:
   push:
     branches:
-    - main
-    paths:
-      - 'client/**'
-      - 'server/**'
+    - master
 env:
   CONTAINER_IMAGE: secretcolossus/${{github.event.repository.name}}:latest
 jobs:

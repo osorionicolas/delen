@@ -77,14 +77,6 @@ app.get("/text", (req, res) => {
 	res.send(this.text);
 });
 
-app.get('/', function(req, res) {
-	const front = path.join('build', 'index.html')
-	if(fs.existsSync(front))
-		res.sendFile(path.join('build', 'index.html'));
-	else
-		res.redirect(process.env.FRONTEND_URL)
-});
-
 app.listen(port, () => {
   	console.log("Express server listening on port " + port);
 });

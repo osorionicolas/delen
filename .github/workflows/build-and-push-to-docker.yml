@@ -4,30 +4,9 @@ on:
     - master
 env:
   CONTAINER_IMAGE: secretcolossus/${{github.event.repository.name}}:latest
-  REACT_APP_SERVER_ADDRESS: apps.local:5000
+  DELEN_SERVER: secretcolossus/delen-server:latest
+  DELEN_CLIENT: secretcolossus/delen-client:latest
 jobs:
-  build-delen:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
-    defaults:
-      run:
-        working-directory: ./client
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: Generate env file
-      run: echo "REACT_APP_SERVER_ADDRESS = '$REACT_APP_SERVER_ADDRESS'" > .env
-    - name: Install Packages
-      run: npm install
-    - name: Build page
-      run: npm run build --prod
-    - name: Move build
-      run: cp -r build ../server
   build-push:
     runs-on: ubuntu-latest
     needs: build-delen
@@ -36,7 +15,12 @@ jobs:
     - name: Docker Hub login
       run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
     - name: Build image 
-      run: docker build -t $CONTAINER_IMAGE .
-      working-directory: .
+      run: docker build -t $DELEN_SERVER .
+      working-directory: ./server
+    - name: Build image 
+      run: docker build -t $DELEN_CLIENT .
+      working-directory: ./client
     - name: Push to Docker Hub
-      run: docker push $CONTAINER_IMAGE
+      run: docker push $DELEN_SERVER
+    - name: Push to Docker Hub
+      run: docker push $DELEN_CLIENT

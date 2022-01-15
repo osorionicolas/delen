@@ -3,7 +3,7 @@ FROM node:15-alpine3.12 as build-stage
 COPY . /app
 WORKDIR /app
 RUN npm install && \
-    npm build
+    npm run build
 
 ########################################################################################################################
 FROM nginx:stable-alpine as production-stage

@@ -4,12 +4,13 @@ on:
     - master
 env:
   CONTAINER_IMAGE: secretcolossus/${{github.event.repository.name}}:latest
+  REACT_APP_SERVER_ADDRESS: apps.local:5000
 jobs:
   build-delen:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [17.x]
+        node-version: [16.x]
     defaults:
       run:
         working-directory: ./client
@@ -19,6 +20,8 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Generate env file
+      run: echo "REACT_APP_SERVER_ADDRESS = '$REACT_APP_SERVER_ADDRESS'" > .env
     - name: Install Packages
       run: npm install
     - name: Build page

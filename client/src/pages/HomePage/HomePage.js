@@ -16,7 +16,7 @@ const HomePage = () => {
     const [value, setValue] = useState("")
 
     useEffect(() => {
-        fetch(`${SERVER_ADDRESS}/text`)
+        fetch(`http://${SERVER_ADDRESS}/text`)
             .then(response => response.text())
             .then(data => setValue(data))
     }, [])
@@ -25,7 +25,7 @@ const HomePage = () => {
 
     const handleBlur = (event) => {
         const { value } = event.target;
-        fetch(`${SERVER_ADDRESS}/text`, {
+        fetch(`http://${SERVER_ADDRESS}/text`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: value

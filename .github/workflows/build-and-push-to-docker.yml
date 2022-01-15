@@ -9,7 +9,6 @@ env:
 jobs:
   build-push:
     runs-on: ubuntu-latest
-    needs: build-delen
     steps:
     - uses: actions/checkout@v2
     - name: Docker Hub login

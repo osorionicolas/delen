@@ -23,24 +23,20 @@ jobs:
         run: npm run build --prod
       - name: Copy build
         run: cp -r build ../server
-      - name: List files
-        run: ls -l server
-        working-directory: .
       - name: Install dependencies
         run: npm install
         working-directory: ./server
-      - name: List files
-        run: ls -l server/node_modules
-        working-directory: .
   build-push:
     runs-on: ubuntu-latest
-    if: ${{false}}
     needs: build
     steps:
-    - uses: actions/checkout@v2
-    - name: Docker Hub login
-      run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
-    - name: Build image 
-      run: docker build -t $CONTAINER_IMAGE .
-    - name: Push to Docker Hub
-      run: docker push $CONTAINER_IMAGE
+    - name: List files
+      run: ls -l server
+      working-directory: .
+    #- uses: actions/checkout@v2
+    #- name: Docker Hub login
+    #  run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
+    #- name: Build image 
+    #  run: docker build -t $CONTAINER_IMAGE .
+    #- name: Push to Docker Hub
+    #  run: docker push $CONTAINER_IMAGE

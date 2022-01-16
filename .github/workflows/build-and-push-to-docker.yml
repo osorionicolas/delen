@@ -39,12 +39,9 @@ jobs:
       with:
         name: server
         path: ./server
-    - name: List files
-      run: ls -l ./server
-      working-directory: .
-    #- name: Docker Hub login
-    #  run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
-    #- name: Build image 
-    #  run: docker build -t $CONTAINER_IMAGE .
-    #- name: Push to Docker Hub
-    #  run: docker push $CONTAINER_IMAGE
+    - name: Docker Hub login
+      run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
+    - name: Build image 
+      run: docker build -t $CONTAINER_IMAGE .
+    - name: Push to Docker Hub
+      run: docker push $CONTAINER_IMAGE

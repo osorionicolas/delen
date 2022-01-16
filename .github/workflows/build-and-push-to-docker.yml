@@ -30,7 +30,7 @@ jobs:
         run: npm install
         working-directory: ./server
       - name: List files
-        run: ls -l server
+        run: ls -l server/node_modules
         working-directory: .
   build-push:
     runs-on: ubuntu-latest

@@ -73,6 +73,14 @@ app.post("/text", (req, res) => {
 	res.send(this.text)
 })
 
+app.get('/', function(req, res) {
+	const front = path.join('build', 'index.html')
+	if(fs.existsSync(front))
+		res.sendFile(path.join('build', 'index.html'));
+	else
+		res.redirect('http://localhost:3000')
+});
+
 app.get("/text", (req, res) => {
 	res.send(this.text);
 });

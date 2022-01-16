@@ -4,22 +4,38 @@ on:
     - master
 env:
   CONTAINER_IMAGE: secretcolossus/${{github.event.repository.name}}:latest
-  DELEN_SERVER: secretcolossus/delen-server:latest
-  DELEN_CLIENT: secretcolossus/delen-client:latest
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    defeault:
+      working-directory: ./client
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Install dependencies
+        run: npm install    
+      - name: Generate build
+        run: npm run build --prod
+      - name: Copy build
+        run: cp -r build ../server
+      - name: List files
+        run: ls -l server
+        working-directory: .
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./server
   build-push:
     runs-on: ubuntu-latest
+    if: ${{ false }}
     steps:
     - uses: actions/checkout@v2
     - name: Docker Hub login
       run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
     - name: Build image 
-      run: docker build -t $DELEN_SERVER .
-      working-directory: ./server
-    - name: Build image 
-      run: docker build -t $DELEN_CLIENT .
-      working-directory: ./client
+      run: docker build -t $CONTAINER_IMAGE .
     - name: Push to Docker Hub
-      run: docker push $DELEN_SERVER
-    - name: Push to Docker Hub
-      run: docker push $DELEN_CLIENT
+      run: docker push $CONTAINER_IMAGE

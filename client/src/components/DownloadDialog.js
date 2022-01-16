@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControlLabel, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
+import { Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemIcon, ListItemText, Typography, IconButton, ListItemSecondaryAction } from '@material-ui/core'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
 import download from 'downloadjs'
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FolderIcon from '@material-ui/icons/Folder'
 import { SERVER_ADDRESS } from '../config/environment'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
+import copy from 'copy-to-clipboard'
 
 const styles = makeStyles((theme) => ({
     button: {
@@ -18,7 +20,7 @@ const styles = makeStyles((theme) => ({
     },
 }))
 
-const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownloadableFiles}) => {
+const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, setDownloadableFiles}) => {
     const classes = styles()
     const [checked, setChecked] = useState([])
     const [selectAll, setSelectAll] = useState(false)
@@ -70,6 +72,13 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownlo
         setChecked(newChecked)
     }
 
+    const getDownloadableFiles = async () => {
+        const files = await fetch(`http://${SERVER_ADDRESS}/files`)
+            .then(response => response.json())
+            .then(data => data)
+        setDownloadableFiles(files)
+    }
+
     useEffect(() => {
         setChecked([])
         if(selectAll) {
@@ -91,11 +100,8 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownlo
     return (
         <Dialog fullWidth={true} onClose={() => setOpen(false)} aria-labelledby="dialog-title" open={open}>
             <DialogTitle style={{ textAlign: "center"}} id="dialog-title">Uploaded files</DialogTitle>
-            <div style={{display: "flex", marginLeft: "23px"}}>
-                <FormControlLabel
-                    control={<Checkbox checked={selectAll} onChange={() => setSelectAll(!selectAll)} name="checkedA" />}
-                    classes={{label: "label"}}
-                />
+            <div style={{display: "flex", marginLeft: "12px"}}>
+                <Checkbox checked={selectAll} onChange={() => setSelectAll(!selectAll)} name="checkedA" />
                 <Typography style={{ textAlign: "right", marginRight: "28px", alignSelf: "center"}} variant="subtitle1" color="inherit" className="flexGrow">There are {getFiles(downloadableFiles).length} file/s</Typography>
             </div>
             <DialogContent dividers>
@@ -130,6 +136,11 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownlo
                                                         />
                                                     </ListItemIcon>
                                                     <ListItemText primary={childname} />
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton edge="end" aria-label="copy" onClick={() => copy(`http://${SERVER_ADDRESS}/files/${filename}?path=${file.path}`)}>
+                                                            <FileCopyIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
                                                 </ListItem>
                                             )
                                         })
@@ -152,6 +163,11 @@ const DownloadDialog = ({open, setOpen, setLoading, downloadableFiles, getDownlo
                                         />
                                     </ListItemIcon>
                                     <ListItemText id={filename} primary={filename} />
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge="end" aria-label="copy" onClick={() => copy(`http://${SERVER_ADDRESS}/files/${filename}?path=${file.path}`)}>
+                                            <FileCopyIcon />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
                                 </ListItem>
                                 )
                         }

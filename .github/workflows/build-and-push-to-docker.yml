@@ -31,7 +31,6 @@ jobs:
         working-directory: ./server
   build-push:
     runs-on: ubuntu-latest
-    if: ${{ false }}
     steps:
     - uses: actions/checkout@v2
     - name: Docker Hub login

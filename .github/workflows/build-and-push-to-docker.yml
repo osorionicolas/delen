@@ -26,10 +26,18 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: ./server
+      - uses: actions/upload-artifact@master
+        with:
+          name: server
+          path: ./server
   build-push:
     runs-on: ubuntu-latest
     needs: build
     steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: server
+        path: ./server
     - uses: actions/checkout@v2
     - name: List files
       run: ls -l ./server

@@ -75,6 +75,7 @@ const DownloadDialog = ({ open, setOpen, setLoading, downloadableFiles, setDownl
                 }).then(setTimeout(() => getDownloadableFiles(), 500))
             })
             setSelectAll(false)
+            setChecked([])
         }
     }
 

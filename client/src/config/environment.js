@@ -1,1 +1,1 @@
-export const SERVER_ADDRESS = process.env.REACT_APP_SERVER_ADDRESS;
+export const SERVER_ADDRESS = process.env.NEXT_PUBLIC_SERVER_ADDRESS

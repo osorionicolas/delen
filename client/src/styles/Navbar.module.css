@@ -1,0 +1,27 @@
+.button {
+    display: flex;
+    justify-content: space-around;
+    flex-grow: 0.1;
+}
+
+.loader {
+    position: "fixed";
+    top: "50%";
+    left: "50%";
+    transform: "translate(-50%, -50%)";
+}
+
+.loaderBackground {
+    background: "black";
+    height: "100%";
+    width: "100%";
+    position: "absolute";
+    z-index: 9999;
+    opacity: 0.7;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #009980;
+}

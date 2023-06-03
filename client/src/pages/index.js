@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar"
 
 const HomePage = () => {
     const [value, setValue] = useState("")
-
+    console.log(SERVER_ADDRESS)
     useEffect(() => {
         fetch(`${SERVER_ADDRESS}/text`)
             .then((response) => response.text())

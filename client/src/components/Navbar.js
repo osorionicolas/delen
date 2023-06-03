@@ -22,7 +22,7 @@ const Navbar = () => {
     }
 
     return (
-        <div>
+        <>
             {loading && (
                 <div className={styles.loaderBackground}>
                     <Loader className={styles.loader} type="Puff" color="#00BFFF" height={100} width={100} />
@@ -65,7 +65,7 @@ const Navbar = () => {
                     </Box>
                 </Toolbar>
             </AppBar>
-        </div>
+        </>
     )
 }
 

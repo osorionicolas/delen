@@ -1,142 +1,163 @@
-import React, { useState, useEffect } from "react"
-import { makeStyles } from "@mui/styles"
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@mui/styles";
 import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    Snackbar,
-    TextField,
-    createFilterOptions,
-    Autocomplete,
-    Alert,
-} from "@mui/material"
-import { DropzoneAreaBase } from "mui-file-dropzone"
-import { SERVER_ADDRESS } from "../config/environment"
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Snackbar,
+  TextField,
+  createFilterOptions,
+  Autocomplete,
+  Alert,
+} from "@mui/material";
+import { DropzoneAreaBase } from "mui-file-dropzone";
 
 const styles = makeStyles(() => ({
-    button: {
-        margin: "8px",
-    },
-}))
+  button: {
+    margin: "8px",
+  },
+}));
 
 const UploadDialog = ({ open, setOpen, downloadableFiles }) => {
-    const classes = styles()
-    const [path, setPath] = useState(null)
-    const [files, setFiles] = useState([])
-    const [uploadFileAlert, setUploadFileAlert] = useState(false)
+  const classes = styles();
+  const [path, setPath] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [uploadFileAlert, setUploadFileAlert] = useState(false);
 
-    const filter = createFilterOptions()
+  const filter = createFilterOptions();
 
-    const handleSave = () => {
-        files.forEach((file) => {
-            const data = new FormData()
-            data.append("file", file.file)
-            let query = ""
-            if (path) query = `?path=${path.inputValue}`
-            fetch(`${SERVER_ADDRESS}/files${query}`, {
-                method: "POST",
-                body: data,
-            })
-        })
-        setUploadFileAlert(true)
-        setOpen(false)
-        setPath(null)
-    }
+  const handleSave = () => {
+    files.forEach((file) => {
+      const data = new FormData();
+      data.append("file", file.file);
+      let query = "";
+      if (path) query = `?path=${path.inputValue}`;
+      fetch(`/files${query}`, {
+        method: "POST",
+        body: data,
+      });
+    });
+    setUploadFileAlert(true);
+    setOpen(false);
+    setPath(null);
+  };
 
-    const getFolders = (files) =>
-        files
-            .map((file) => (file.type === "directory" ? file : null))
-            .filter(Boolean)
-            .map((file) => ({ inputValue: file.name, label: file.name }))
+  const getFolders = (files) =>
+    files
+      .map((file) => (file.type === "directory" ? file : null))
+      .filter(Boolean)
+      .map((file) => ({ inputValue: file.name, label: file.name }));
 
-    useEffect(() => {
-        setFiles([])
-    }, [open])
+  useEffect(() => {
+    setFiles([]);
+  }, [open]);
 
-    return (
-        <>
-            <Dialog fullWidth={true} onClose={() => setOpen(false)} aria-labelledby="dialog-title" open={open}>
-                <DialogTitle style={{ textAlign: "center" }} id="dialog-title">
-                    Upload files
-                </DialogTitle>
-                <div style={{ display: "flex", marginLeft: "23px" }}>
-                    <Autocomplete
-                        value={path}
-                        onChange={(event, newValue) => setPath(newValue)}
-                        filterOptions={(options, params) => {
-                            const filtered = filter(options, params)
-                            if (
-                                params.inputValue !== "" &&
-                                !filtered.some((option) => option.inputValue === params.inputValue)
-                            ) {
-                                filtered.push({
-                                    inputValue: params.inputValue,
-                                    label: `Create folder "${params.inputValue}"`,
-                                })
-                            }
-                            return filtered
-                        }}
-                        id="destination-folder"
-                        options={getFolders(downloadableFiles)}
-                        getOptionLabel={(option) => option.inputValue}
-                        selectOnFocus
-                        clearOnBlur
-                        handleHomeEndKeys
-                        renderOption={(props, option) => <li {...props}>{`${option.label}`}</li>}
-                        sx={{ width: 300 }}
-                        freeSolo
-                        renderInput={(params) => (
-                            <TextField {...params} size="small" label="Destination folder" variant="outlined" />
-                        )}
-                    />
-                </div>
-                <DialogContent dividers>
-                    <DropzoneAreaBase
-                        acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
-                        maxFileSize={500000000}
-                        filesLimit={50}
-                        useChipsForPreview
-                        previewGridProps={{ container: { spacing: 1, direction: "row" } }}
-                        showAlerts={["error", "info"]}
-                        dropzoneText={files.length === 0 ? "Drag and drop a file here or click" : ""}
-                        fileObjects={files}
-                        onAdd={(newFiles) => setFiles((prev) => prev.concat(newFiles))}
-                        onDelete={(fileDeleted) => setFiles((prev) => prev.filter((file) => file !== fileDeleted))}
-                    />
-                </DialogContent>
-                <Grid container justifyContent="flex-end">
-                    <Grid item>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            className={classes.button}
-                            onClick={() => setOpen(false)}
-                        >
-                            Cancel
-                        </Button>
-                    </Grid>
-                    <Grid item>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.button}
-                            onClick={() => handleSave()}
-                            disabled={files.length === 0}
-                        >
-                            Submit
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Dialog>
-            <Snackbar open={uploadFileAlert} autoHideDuration={6000} onClose={() => setUploadFileAlert(false)}>
-                <Alert onClose={() => setUploadFileAlert(false)} severity="success">
-                    Files uploaded successfully!
-                </Alert>
-            </Snackbar>
-        </>
-    )
-}
+  return (
+    <>
+      <Dialog
+        fullWidth={true}
+        onClose={() => setOpen(false)}
+        aria-labelledby="dialog-title"
+        open={open}
+      >
+        <DialogTitle style={{ textAlign: "center" }} id="dialog-title">
+          Upload files
+        </DialogTitle>
+        <div style={{ display: "flex", marginLeft: "23px" }}>
+          <Autocomplete
+            value={path}
+            onChange={(event, newValue) => setPath(newValue)}
+            filterOptions={(options, params) => {
+              const filtered = filter(options, params);
+              if (
+                params.inputValue !== "" &&
+                !filtered.some(
+                  (option) => option.inputValue === params.inputValue
+                )
+              ) {
+                filtered.push({
+                  inputValue: params.inputValue,
+                  label: `Create folder "${params.inputValue}"`,
+                });
+              }
+              return filtered;
+            }}
+            id="destination-folder"
+            options={getFolders(downloadableFiles)}
+            getOptionLabel={(option) => option.inputValue}
+            selectOnFocus
+            clearOnBlur
+            handleHomeEndKeys
+            renderOption={(props, option) => (
+              <li {...props}>{`${option.label}`}</li>
+            )}
+            sx={{ width: 300 }}
+            freeSolo
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                size="small"
+                label="Destination folder"
+                variant="outlined"
+              />
+            )}
+          />
+        </div>
+        <DialogContent dividers>
+          <DropzoneAreaBase
+            acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
+            maxFileSize={500000000}
+            filesLimit={50}
+            useChipsForPreview
+            previewGridProps={{ container: { spacing: 1, direction: "row" } }}
+            showAlerts={["error", "info"]}
+            dropzoneText={
+              files.length === 0 ? "Drag and drop a file here or click" : ""
+            }
+            fileObjects={files}
+            onAdd={(newFiles) => setFiles((prev) => prev.concat(newFiles))}
+            onDelete={(fileDeleted) =>
+              setFiles((prev) => prev.filter((file) => file !== fileDeleted))
+            }
+          />
+        </DialogContent>
+        <Grid container justifyContent="flex-end">
+          <Grid item>
+            <Button
+              variant="contained"
+              color="error"
+              className={classes.button}
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={() => handleSave()}
+              disabled={files.length === 0}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
+      </Dialog>
+      <Snackbar
+        open={uploadFileAlert}
+        autoHideDuration={6000}
+        onClose={() => setUploadFileAlert(false)}
+      >
+        <Alert onClose={() => setUploadFileAlert(false)} severity="success">
+          Files uploaded successfully!
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
 
-export default UploadDialog
+export default UploadDialog;

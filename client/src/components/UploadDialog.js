@@ -108,7 +108,7 @@ const UploadDialog = ({ open, setOpen, downloadableFiles }) => {
         <DialogContent dividers>
           <DropzoneAreaBase
             acceptedFiles={["text/*", "image/*", "video/*", "application/*"]}
-            maxFileSize={500000000}
+            maxFileSize={5000000000}
             filesLimit={50}
             useChipsForPreview
             previewGridProps={{ container: { spacing: 1, direction: "row" } }}

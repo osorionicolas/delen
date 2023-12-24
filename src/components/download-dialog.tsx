@@ -27,6 +27,7 @@ import {
 } from "./ui/collapsible";
 import CopyButton from "./copy-button";
 import { useDownloadableFiles } from "@/hooks/useDownloadableFiles";
+import { ScrollArea } from "./ui/scroll-area";
 
 const DownloadDialog = ({
   setLoading
@@ -135,76 +136,78 @@ const DownloadDialog = ({
           </DialogDescription>
         </DialogHeader>
         <Separator />
-        <ul>
-          {downloadableFiles.map((file: any) => {
-            const filename = file.name;
-            if (file.type === FileType.DIR && file.children.length > 0) {
-              return (
-                <Collapsible open={openFolder} key={filename}>
-                  <CollapsibleTrigger asChild>
-                    <li
-                      key={filename}
-                      className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                      onClick={() => setOpenFolder(!openFolder)}
-                    >
-                      <div className="flex items-center gap-5">
-                        <Folder size={18} />
-                        {filename}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        className="hover:bg-color-none hover:text-white"
+        <ScrollArea className="h-96">
+          <ul>
+            {downloadableFiles.map((file: any) => {
+              const filename = file.name;
+              if (file.type === FileType.DIR && file.children.length > 0) {
+                return (
+                  <Collapsible open={openFolder} key={filename}>
+                    <CollapsibleTrigger asChild>
+                      <li
+                        key={filename}
+                        className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
+                        onClick={() => setOpenFolder(!openFolder)}
                       >
-                        {openFolder ? <ChevronUp /> : <ChevronDown />}
-                      </Button>
-                    </li>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="CollapsibleContent">
-                    <ul>
-                      {file.children.map((child: File) => (
-                        <li
-                          key={child.name}
-                          className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                          onClick={() => handleToggle(child)}
+                        <div className="flex items-center gap-5">
+                          <Folder size={18} />
+                          {filename}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          className="hover:bg-color-none hover:text-white"
                         >
-                          <div className="flex items-center gap-5 pl-5">
-                            <Checkbox
-                              checked={checked.indexOf(child) !== -1}
-                              tabIndex={-1}
+                          {openFolder ? <ChevronUp /> : <ChevronDown />}
+                        </Button>
+                      </li>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="CollapsibleContent">
+                      <ul>
+                        {file.children.map((child: File) => (
+                          <li
+                            key={child.name}
+                            className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
+                            onClick={() => handleToggle(child)}
+                          >
+                            <div className="flex items-center gap-5 pl-5">
+                              <Checkbox
+                                checked={checked.indexOf(child) !== -1}
+                                tabIndex={-1}
+                              />
+                              {child.name}
+                            </div>
+                            <CopyButton
+                              text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
                             />
-                            {child.name}
-                          </div>
-                          <CopyButton
-                            text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  </CollapsibleContent>
-                </Collapsible>
-              );
-            } else if (file.type === FileType.FILE) {
-              return (
-                <li
-                  className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                  key={filename}
-                  onClick={() => handleToggle(file)}
-                >
-                  <div className="flex items-center gap-5">
-                    <Checkbox
-                      checked={checked.indexOf(file) !== -1}
-                      tabIndex={-1}
+                          </li>
+                        ))}
+                      </ul>
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              } else if (file.type === FileType.FILE) {
+                return (
+                  <li
+                    className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
+                    key={filename}
+                    onClick={() => handleToggle(file)}
+                  >
+                    <div className="flex items-center gap-5">
+                      <Checkbox
+                        checked={checked.indexOf(file) !== -1}
+                        tabIndex={-1}
+                      />
+                      {filename}
+                    </div>
+                    <CopyButton
+                      text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
                     />
-                    {filename}
-                  </div>
-                  <CopyButton
-                    text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
-                  />
-                </li>
-              );
-            }
-          })}
-        </ul>
+                  </li>
+                );
+              }
+            })}
+          </ul>
+        </ScrollArea>
         <Separator />
         <DialogFooter>
           <div className="flex justify-end items-center gap-4">

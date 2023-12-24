@@ -18,7 +18,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="flex justify-center items-center min-h-screen">
+    <main className="flex justify-center items-center h-[calc(100dvh-48px)]">
       <Textarea
         onBlur={handleBlur}
         className="bg-[#8f8f8f] max-w-screen-xl h-[57vh] text-lg"

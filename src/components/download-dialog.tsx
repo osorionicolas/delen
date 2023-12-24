@@ -76,7 +76,8 @@ const DownloadDialog = ({
     }
   };
 
-  const handleToggle = (value: File) => {
+  const handleToggle = (event, value: File) => {
+    event.preventDefault()
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
     if (currentIndex === -1) {
@@ -136,7 +137,7 @@ const DownloadDialog = ({
           </DialogDescription>
         </DialogHeader>
         <Separator />
-        <ScrollArea className="h-96">
+        <ScrollArea className="max-h-96">
           <ul>
             {downloadableFiles.map((file: any) => {
               const filename = file.name;
@@ -167,7 +168,7 @@ const DownloadDialog = ({
                           <li
                             key={child.name}
                             className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                            onClick={() => handleToggle(child)}
+                            onClick={(event) => handleToggle(event, child)}
                           >
                             <div className="flex items-center gap-5 pl-5">
                               <Checkbox
@@ -177,20 +178,20 @@ const DownloadDialog = ({
                               {child.name}
                             </div>
                             <CopyButton
-                              text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
+                              text={`${window.location.origin}/api/files/${child.name}?path=${file.path}`}
                             />
                           </li>
                         ))}
                       </ul>
                     </CollapsibleContent>
                   </Collapsible>
-                );
+                )
               } else if (file.type === FileType.FILE) {
                 return (
                   <li
                     className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
                     key={filename}
-                    onClick={() => handleToggle(file)}
+                    onClick={(event) => handleToggle(event, file)}
                   >
                     <div className="flex items-center gap-5">
                       <Checkbox

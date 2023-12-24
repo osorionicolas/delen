@@ -7,9 +7,10 @@ import copy from "copy-to-clipboard";
 const CopyButton = ({ text }: {text: string}) => {
     const [snackOpen, setSnackOpen] = useState(false);
 
-    const onCopy = () => {
-        copy(text);
-        setSnackOpen(true)
+    const onCopy = (event) => {
+      event.stopPropagation()
+      copy(text);
+      setSnackOpen(true)
     }
 
     return (

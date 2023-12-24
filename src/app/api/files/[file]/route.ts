@@ -3,12 +3,8 @@ import fs from "fs";
 import { ReadableOptions } from "stream";
 import path from "path";
 
-const dirPath = process.env.FILES_PATH || "public/files";
-
-export async function GET(request: NextRequest, { params }: { params: { file: string } }) {
-  const file = params.file;
-  let location = request.nextUrl.searchParams.get("path");
-  if (!location) location = `${dirPath}/${file}`;
+export async function GET(request: NextRequest) {
+  const location = request.nextUrl.searchParams.get("path");
   console.log("Looking for file " + location);
   const stats = await fs.promises.stat(location); // Get the file size
   const data: ReadableStream<Uint8Array> = streamFile(location); // Stream the file with a 1kb chunk
@@ -23,7 +19,6 @@ export async function GET(request: NextRequest, { params }: { params: { file: st
     }),
   })
   return res
-  //download(path, file);
 }
 
 /**

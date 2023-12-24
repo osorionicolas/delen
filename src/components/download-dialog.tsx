@@ -76,8 +76,7 @@ const DownloadDialog = ({
     }
   };
 
-  const handleToggle = (event, value: File) => {
-    event.preventDefault()
+  const handleToggle = (value: File) => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
     if (currentIndex === -1) {
@@ -168,7 +167,7 @@ const DownloadDialog = ({
                           <li
                             key={child.name}
                             className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                            onClick={(event) => handleToggle(event, child)}
+                            onClick={() => handleToggle(child)}
                           >
                             <div className="flex items-center gap-5 pl-5">
                               <Checkbox
@@ -178,7 +177,7 @@ const DownloadDialog = ({
                               {child.name}
                             </div>
                             <CopyButton
-                              text={`${window.location.origin}/api/files/${child.name}?path=${file.path}`}
+                              text={`${window.location.origin}/api/files/${child.name}?path=${child.path}`}
                             />
                           </li>
                         ))}
@@ -191,7 +190,7 @@ const DownloadDialog = ({
                   <li
                     className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
                     key={filename}
-                    onClick={(event) => handleToggle(event, file)}
+                    onClick={() => handleToggle(file)}
                   >
                     <div className="flex items-center gap-5">
                       <Checkbox

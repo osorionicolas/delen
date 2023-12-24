@@ -1,19 +1,10 @@
-### Technologies
+## Run
 
-Frontend: React<br>
-Backend: NodeJS
+yarn dev
 
-### Run
+Runs the app in the development mode.
 
-npm run delen
-
-Runs the app in the development mode.<br />
-Backend runs on port 5000 and Frontend runs on port 3000.
-
-Frontend environtment variables:
-- SERVER_ADDRESS
-
-Backend environtment variables:
+Environtment variables:
 
 - FILES_PATH
 - PORT

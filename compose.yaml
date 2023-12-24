@@ -1,0 +1,15 @@
+services:
+  delen:
+    container_name: delen
+    image: secretcolossus/delen:latest
+    restart: always
+    environment:
+      PORT: 3000
+      FILES_PATH: public/files
+    volumes:
+      - delen_files:/app/public/files
+    ports:
+      - 5001:3000
+
+volumes:
+  delen_files:

@@ -7,40 +7,11 @@ on:
 env:
   CONTAINER_IMAGE: secretcolossus/${{github.event.repository.name}}:latest
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-      - name: Install dependencies
-        run: yarn install
-      - name: Generate build
-        run: yarn build
-      - name: Copy build
-        run: cp -r out ../server
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./server
-      - uses: actions/upload-artifact@v2
-        with:
-          name: server
-          path: ./server
   build-push:
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: server
-          path: ./server
+      - name: Clone repository
+        uses: actions/checkout@v4
       - name: Docker Hub login
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Build image

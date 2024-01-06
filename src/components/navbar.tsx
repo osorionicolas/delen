@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import React, { useState } from "react"
 import { Toolbar } from "@mui/material"
 import DownloadDialog from "./download-dialog"
@@ -9,33 +9,36 @@ import CopyButton from "@/components/copy-button"
 import { useText } from "@/hooks/useText"
 
 const Navbar = () => {
-  const [loading, setLoading] = useState(false)
-  const { text } = useText()
-  // document.getElementById("textArea")?.value
-  return (
-    <>
-      {loading && (
-        <div className={styles.loaderBackground}>
-          <ProgressBar
-            wrapperClass={styles.loader}
-            barColor="#00BFFF"
-            height={100}
-            width={100}
-          />
-        </div>
-      )}
-      <header className="text-white shadow">
-        <Toolbar variant="dense" className="flex justify-between bg-[#009980]">
-          <span className="text-xl py-2 px-3">Delen</span>
-          <div className="flex justify-around grow-[0.1]">
-            <CopyButton text={text} />
-            <UploadDialog />
-            <DownloadDialog setLoading={setLoading} />
-          </div>
-        </Toolbar>
-      </header>
-    </>
-  );
-};
+    const [loading, setLoading] = useState(false)
+    const { text } = useText()
 
-export default Navbar;
+    return (
+        <>
+            {loading && (
+                <div className={styles.loaderBackground}>
+                    <ProgressBar
+                        wrapperClass={styles.loader}
+                        barColor="#00BFFF"
+                        height={100}
+                        width={100}
+                    />
+                </div>
+            )}
+            <header className="text-white shadow">
+                <Toolbar
+                    variant="dense"
+                    className="flex justify-between bg-[#009980]"
+                >
+                    <span className="text-xl py-2 px-3">Delen</span>
+                    <div className="flex justify-around grow-[0.1]">
+                        <CopyButton text={text} />
+                        <UploadDialog />
+                        <DownloadDialog setLoading={setLoading} />
+                    </div>
+                </Toolbar>
+            </header>
+        </>
+    )
+}
+
+export default Navbar

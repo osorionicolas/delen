@@ -1,5 +1,6 @@
 {
-  "tabWidth": 2,
+  "semi": false,
+  "tabWidth": 4,
   "overrides": [
     {
       "files": "*.yml",

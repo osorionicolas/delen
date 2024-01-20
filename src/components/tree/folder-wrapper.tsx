@@ -1,6 +1,10 @@
 import { ChevronDown, ChevronUp, Folder } from "lucide-react"
-import { Button } from "./ui/button"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
+import { Button } from "../ui/button"
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "../ui/collapsible"
 import { useState } from "react"
 import FileWrapper from "./file-wrapper"
 import { File, FileType } from "@/lib/definitions"
@@ -9,12 +13,14 @@ type FolderWrapperProperties = {
     file: any
     checked: any[]
     handleToggle: (file) => void
+    isRoot: boolean
 }
 
 const FolderWrapper = ({
     file,
     checked,
-    handleToggle
+    handleToggle,
+    isRoot,
 }: FolderWrapperProperties) => {
     const [openFolder, setOpenFolder] = useState(false)
 
@@ -25,9 +31,9 @@ const FolderWrapper = ({
             <CollapsibleTrigger asChild>
                 <li
                     key={filename}
-                    className={
-                        "cursor-pointer flex justify-between hover:bg-zinc-500 py-1 pl-4 pr-1"
-                    }
+                    className={`cursor-pointer flex justify-between hover:bg-zinc-500 py-1 pr-1 ${
+                        isRoot ? "" : "pl-4"
+                    }`}
                     onClick={() => setOpenFolder(!openFolder)}
                 >
                     <div className="flex items-center gap-5">
@@ -42,9 +48,9 @@ const FolderWrapper = ({
                     </Button>
                 </li>
             </CollapsibleTrigger>
-            <CollapsibleContent
-                className="CollapsibleContent border-l-2 ml-4"
-            >
+            <CollapsibleContent className={`CollapsibleContent border-l-2 ${
+                        isRoot ? "" : "ml-4"
+                    }`}>
                 <ul>
                     {file.children.map((child: File) => {
                         const childname = child.name
@@ -58,6 +64,7 @@ const FolderWrapper = ({
                                     file={child}
                                     checked={checked}
                                     handleToggle={handleToggle}
+                                    isRoot={false}
                                 />
                             )
                         } else if (child.type === FileType.FILE) {
@@ -67,6 +74,7 @@ const FolderWrapper = ({
                                     file={child}
                                     checked={checked}
                                     handleToggle={handleToggle}
+                                    isRoot={false}
                                 />
                             )
                         }

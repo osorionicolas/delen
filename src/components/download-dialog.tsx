@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import download from "downloadjs";
 import {
-  ChevronDown,
-  ChevronUp,
   DownloadCloud,
-  Folder,
   Trash,
 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -20,21 +17,16 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Separator } from "./ui/separator";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "./ui/collapsible";
-import CopyButton from "./copy-button";
 import { useDownloadableFiles } from "@/hooks/useDownloadableFiles";
 import { ScrollArea } from "./ui/scroll-area";
+import FileWrapper from "./file-wrapper";
+import FolderWrapper from "./folder-wrapper";
 
 const DownloadDialog = ({
   setLoading
 }: any) => {
   const [checked, setChecked] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  const [openFolder, setOpenFolder] = useState(false);
   const { downloadableFiles, setDownloadableFiles } = useDownloadableFiles();
 
   const getFiles = (files: any) =>
@@ -142,68 +134,22 @@ const DownloadDialog = ({
               const filename = file.name;
               if (file.type === FileType.DIR && file.children.length > 0) {
                 return (
-                  <Collapsible open={openFolder} key={filename}>
-                    <CollapsibleTrigger asChild>
-                      <li
+                    <FolderWrapper
                         key={filename}
-                        className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                        onClick={() => setOpenFolder(!openFolder)}
-                      >
-                        <div className="flex items-center gap-5">
-                          <Folder size={18} />
-                          {filename}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          className="hover:bg-color-none hover:text-white"
-                        >
-                          {openFolder ? <ChevronUp /> : <ChevronDown />}
-                        </Button>
-                      </li>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="CollapsibleContent">
-                      <ul>
-                        {file.children.map((child: File) => (
-                          <li
-                            key={child.name}
-                            className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                            onClick={() => handleToggle(child)}
-                          >
-                            <div className="flex items-center gap-5 pl-5">
-                              <Checkbox
-                                checked={checked.indexOf(child) !== -1}
-                                tabIndex={-1}
-                              />
-                              {child.name}
-                            </div>
-                            <CopyButton
-                              text={`${window.location.origin}/api/files/${child.name}?path=${child.path}`}
-                            />
-                          </li>
-                        ))}
-                      </ul>
-                    </CollapsibleContent>
-                  </Collapsible>
+                        file={file}
+                        checked={checked}
+                        handleToggle={handleToggle}
+                    />
                 )
               } else if (file.type === FileType.FILE) {
                 return (
-                  <li
-                    className="cursor-pointer flex justify-between hover:bg-zinc-500 py-1"
-                    key={filename}
-                    onClick={() => handleToggle(file)}
-                  >
-                    <div className="flex items-center gap-5">
-                      <Checkbox
-                        checked={checked.indexOf(file) !== -1}
-                        tabIndex={-1}
-                      />
-                      {filename}
-                    </div>
-                    <CopyButton
-                      text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
+                    <FileWrapper
+                        key={filename}
+                        file={file}
+                        checked={checked}
+                        handleToggle={handleToggle}
                     />
-                  </li>
-                );
+                )
               }
             })}
           </ul>
@@ -224,13 +170,13 @@ const DownloadDialog = ({
               disabled={checked.length === 0}
             >
               <DownloadCloud className="mr-2" />
-              Download
+              Download {checked.length > 0 ? `${checked.length} files` : ""}
             </Button>
           </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
 export default DownloadDialog;

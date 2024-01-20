@@ -21,7 +21,7 @@ const CopyButton = ({ text }: {text: string}) => {
 
     return (
         <>
-            <Button variant="ghost" onClick={onCopy}>
+            <Button variant="ghost" onClick={onCopy} className="px-3">
                 <Files />
             </Button>
             <Snackbar

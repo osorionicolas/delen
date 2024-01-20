@@ -1,15 +1,9 @@
 /** @type {import('next').NextConfig} */
-/*const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
+const withSerwist = require("@serwist/next").default({
+    swSrc: "app/sw.js",
+    swDest: "public/sw.js",
 })
-
-module.exports = withPWA({
-  // next.js config
-  reactStrictMode: false,
-  swcMinify: false,
-})*/
+      
 
 const nextConfig = {
   output: "standalone",

@@ -12,7 +12,7 @@
     /* Type Checking */
     "strict": false /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "allowJs": true,
     "noEmit": true,
     "incremental": true,
@@ -24,6 +24,9 @@
       {
         "name": "next"
       }
+    ],
+    "types": [
+      "@serwist/next/typings"
     ]
   },
   "include": [

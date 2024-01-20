@@ -166,7 +166,10 @@ const DownloadDialog = ({ setLoading }: any) => {
                             disabled={checked.length === 0}
                         >
                             <Trash className="mr-2" />
-                            Delete
+                            Delete{" "}
+                            {checked.length > 0
+                                ? `${checked.length} files`
+                                : ""}
                         </Button>
                         <Button
                             onClick={() => downloadFiles()}

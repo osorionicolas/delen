@@ -1,5 +1,3 @@
-"use client"
-
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Link from "@tiptap/extension-link"
@@ -33,7 +31,7 @@ const Tiptap = () => {
         content: "",
         editorProps: {
             attributes: {
-                class: "bg-[#202124] max-w-screen-xl h-[57vh] text-lg w-[1280px] border-solid border-2 border-[#99C8FF] rounded-md p-3",
+                class: "bg-[#202124] h-[57vh] text-lg border-solid border-2 border-[#99C8FF] rounded-md p-3",
             },
         },
         onUpdate: ({ editor }) => {
@@ -48,7 +46,6 @@ const Tiptap = () => {
         if (editor?.isEmpty) {
             editor.commands.insertContent(text)
         }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [text])
 

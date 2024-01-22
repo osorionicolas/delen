@@ -1,6 +1,5 @@
 "use client"
-import React, { useEffect, useState } from "react"
-import { Toolbar } from "@mui/material"
+import React, { useState } from "react"
 import DownloadDialog from "./download-dialog"
 import UploadDialog from "./upload-dialog"
 import { ProgressBar } from "react-loader-spinner"
@@ -14,9 +13,8 @@ const Navbar = () => {
 
     return (
         <header className="text-white shadow">
-            <Toolbar
-                variant="dense"
-                className="flex justify-between bg-[#009980]"
+            <nav
+                className="flex justify-between bg-[#009980] min-h-12 items-center px-6"
             >
                 <span className="text-xl py-2 px-3">Delen</span>
                 <div className="flex justify-around grow-[0.1]">
@@ -24,7 +22,7 @@ const Navbar = () => {
                     <UploadDialog />
                     <DownloadDialog setLoading={setLoading} />
                 </div>
-            </Toolbar>
+            </nav>
             {loading && (
                 <div className={styles.loaderBackground}>
                     <ProgressBar

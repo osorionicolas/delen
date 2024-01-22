@@ -5,7 +5,9 @@ import Tiptap from "@/components/tiptap"
 const HomePage = () => {
 
     return (
-        <main className="flex justify-center items-center h-[calc(100dvh-48px)]">
+        <main
+            className="py-[calc(25dvh-48px)] px-[1rem] md:p-[8.4rem]"
+        >
             <Tiptap />
         </main>
     )

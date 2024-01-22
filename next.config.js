@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const withSerwist = require("@serwist/next").default({
-    swSrc: "app/sw.js",
+    swSrc: "src/app/sw.ts",
     swDest: "public/sw.js",
 })
       
@@ -9,4 +9,4 @@ const nextConfig = {
   output: "standalone",
 };
 
-module.exports = nextConfig;
+module.exports = withSerwist(nextConfig);

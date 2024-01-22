@@ -22,13 +22,13 @@ import FolderWrapper from "./tree/folder-wrapper"
 const DownloadDialog = ({ setLoading }: any) => {
     const [checked, setChecked] = useState([])
     const [selectAll, setSelectAll] = useState(false)
-    const { downloadableFiles, setDownloadableFiles } = useDownloadableFiles()
+    const { downloadableFiles, setDownloadableFiles, fetchFiles } = useDownloadableFiles()
 
-    const getFiles = (files: any) =>
+    const getFiles = (files: any[]) =>
         files
             .map((file: File) => {
                 if (file.type === FileType.DIR && file.children.length > 0) {
-                    return file.children.map((child: File) => child)
+                    return getFiles(file.children)
                 } else if (file.type === FileType.FILE) {
                     return file
                 }
@@ -76,9 +76,7 @@ const DownloadDialog = ({ setLoading }: any) => {
     }
 
     const getDownloadableFiles = async () => {
-        const files = await fetch(`/api/files`)
-            .then((response) => response.json())
-            .then((data) => data)
+        const files = await fetchFiles()
         setDownloadableFiles(files)
     }
 

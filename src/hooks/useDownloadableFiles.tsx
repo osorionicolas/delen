@@ -3,14 +3,12 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
 type DownloadableFilesContext = {
-  downloadableFiles: File[];
-  setDownloadableFiles: React.Dispatch<React.SetStateAction<File[]>>;
-};
+    downloadableFiles: File[]
+    setDownloadableFiles: React.Dispatch<React.SetStateAction<File[]>>
+    fetchFiles: Function
+}
 
-const DownloadableFilesContext = createContext<DownloadableFilesContext>({
-  downloadableFiles: [],
-  setDownloadableFiles: () => undefined,
-});
+const DownloadableFilesContext = createContext<DownloadableFilesContext>(null)
 
 export const DownloadableFilesProvider = ({ children }: any) => {
   const [downloadableFiles, setDownloadableFiles] = useState<File[]>([])
@@ -28,7 +26,7 @@ export const DownloadableFilesProvider = ({ children }: any) => {
 
   return (
     <DownloadableFilesContext.Provider
-      value={{ downloadableFiles, setDownloadableFiles }}
+      value={{ downloadableFiles, setDownloadableFiles, fetchFiles }}
     >
       {children}
     </DownloadableFilesContext.Provider>

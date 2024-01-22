@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Toolbar } from "@mui/material"
 import DownloadDialog from "./download-dialog"
 import UploadDialog from "./upload-dialog"
@@ -13,7 +13,18 @@ const Navbar = () => {
     const { text } = useText()
 
     return (
-        <>
+        <header className="text-white shadow">
+            <Toolbar
+                variant="dense"
+                className="flex justify-between bg-[#009980]"
+            >
+                <span className="text-xl py-2 px-3">Delen</span>
+                <div className="flex justify-around grow-[0.1]">
+                    <CopyButton text={text} />
+                    <UploadDialog />
+                    <DownloadDialog setLoading={setLoading} />
+                </div>
+            </Toolbar>
             {loading && (
                 <div className={styles.loaderBackground}>
                     <ProgressBar
@@ -24,20 +35,7 @@ const Navbar = () => {
                     />
                 </div>
             )}
-            <header className="text-white shadow">
-                <Toolbar
-                    variant="dense"
-                    className="flex justify-between bg-[#009980]"
-                >
-                    <span className="text-xl py-2 px-3">Delen</span>
-                    <div className="flex justify-around grow-[0.1]">
-                        <CopyButton text={text} />
-                        <UploadDialog />
-                        <DownloadDialog setLoading={setLoading} />
-                    </div>
-                </Toolbar>
-            </header>
-        </>
+        </header>
     )
 }
 

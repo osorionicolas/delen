@@ -73,7 +73,7 @@ export function Dropzone({
     const handleDelete = (e, fileToRemove: string) => {
         e.preventDefault()
         e.stopPropagation()
-        setFiles(prev => prev.filter((file) => file.name !== fileToRemove))
+        setFiles(prev => prev.filter((file: any) => file.name !== fileToRemove))
     }
 
     return (

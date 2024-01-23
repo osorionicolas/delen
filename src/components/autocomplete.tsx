@@ -17,15 +17,12 @@ const Autocomplete = ({
 }: AutocompleteProperties) => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
+    const [input, setInput] = useState("")
 
     const getFolders = (files: File[]) =>
         files
             .map((file: File) => (file.type === FileType.DIR ? file : null))
             .filter(Boolean)
-            .map((file: any) => ({
-                inputValue: file.name,
-                label: file.name,
-            }))
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -38,40 +35,42 @@ const Autocomplete = ({
                 >
                     {value
                         ? getFolders(downloadableFiles).find(
-                              (file) => file.inputValue === value
-                          )?.label
+                              (file) => file.name === value
+                          )?.name
                         : "Destination folder"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
-                    <CommandInput placeholder="Destination folder" />
-                    <CommandEmpty>{`Create folder "${value}"`}</CommandEmpty>
+                    <CommandInput
+                        placeholder="Destination folder"
+                        onValueChange={setInput}
+                    />
+                    <CommandEmpty>{`Create folder "${input}"`}</CommandEmpty>
                     <CommandGroup>
                         {getFolders(downloadableFiles).map((file) => (
                             <CommandItem
-                                key={file.inputValue}
-                                value={file.inputValue}
+                                key={file.name}
+                                value={file.name}
                                 onSelect={(currentValue) => {
                                     setValue(
                                         currentValue === value
                                             ? ""
                                             : currentValue
                                     )
-                                    setOpen(false)
                                     setPath(currentValue)
                                 }}
                             >
                                 <Check
                                     className={cn(
                                         "mr-2 h-4 w-4",
-                                        value === file.inputValue
+                                        value === file.name
                                             ? "opacity-100"
                                             : "opacity-0"
                                     )}
                                 />
-                                {file.label}
+                                {file.name}
                             </CommandItem>
                         ))}
                     </CommandGroup>

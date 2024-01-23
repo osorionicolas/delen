@@ -79,7 +79,7 @@ export function Dropzone({
             {...props}
         >
             <CardContent
-                className="flex flex-col items-center justify-center space-y-2 px-2 py-4 text-xs"
+                className="space-y-2 px-2 py-4 text-xs"
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onClick={handleButtonClick}
@@ -101,7 +101,7 @@ export function Dropzone({
                 {files.map((file) => {
                     const filename = file.name
                     return (
-                        <Badge key={filename}>
+                        <Badge key={filename} className="m-1">
                             {`${filename} (${Math.round(file.size / 1024)} KB)`}
                             <Button
                                 className="p-1 h-6 rounded-full ml-2 bg-gray-300"

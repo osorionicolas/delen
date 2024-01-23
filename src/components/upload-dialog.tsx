@@ -4,6 +4,7 @@ import {
     createFilterOptions,
     Autocomplete,
 } from "@mui/material"
+import Autocomplete2 from "@/components/autocomplete"
 import { DropzoneAreaBase } from "mui-file-dropzone"
 import { Button } from "./ui/button"
 import {
@@ -57,7 +58,11 @@ const UploadDialog = () => {
     return (
         <Dialog onOpenChange={() => setFiles([])} open={open}>
             <DialogTrigger asChild>
-                <Button variant="ghost" color="inherit" onClick={() => setOpen(true)}>
+                <Button
+                    variant="ghost"
+                    color="inherit"
+                    onClick={() => setOpen(true)}
+                >
                     <UploadCloud />
                 </Button>
             </DialogTrigger>
@@ -107,6 +112,10 @@ const UploadDialog = () => {
                         />
                     )}
                 />
+                {/*<Autocomplete2
+                    downloadableFiles={downloadableFiles}
+                    setPath={setPath}
+                    />*/}
                 <Separator />
                 <DropzoneAreaBase
                     dropzoneClass="dark"
@@ -151,9 +160,7 @@ const UploadDialog = () => {
                             disabled={files.length === 0}
                         >
                             Upload{" "}
-                            {files.length > 0
-                                ? `${files.length} files`
-                                : ""}
+                            {files.length > 0 ? `${files.length} files` : ""}
                         </Button>
                     </div>
                 </DialogFooter>

@@ -1,10 +1,9 @@
-import React, { useRef, useState } from "react"
+import React, { useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "./ui/badge"
 import { X } from "lucide-react"
 
-// Define the props expected by the Dropzone component
 interface DropzoneProps {
     setFiles: React.Dispatch<React.SetStateAction<string[]>>
     className?: string
@@ -12,7 +11,6 @@ interface DropzoneProps {
     files: any[]
 }
 
-// Create the Dropzone component receiving props
 export function Dropzone({
     setFiles,
     className,
@@ -20,9 +18,8 @@ export function Dropzone({
     files,
     ...props
 }: DropzoneProps) {
-    // Initialize state variables using the useState hook
     const fileInputRef = useRef<HTMLInputElement | null>(null) // Reference to file input element
-    const [error, setError] = useState<string | null>(null) // Error message state
+    //const [error, setError] = useState<string | null>(null) // Error message state
 
     // Function to handle drag over event
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -60,7 +57,7 @@ export function Dropzone({
         const fileList = Array.from(files)
         setFiles((prevFiles: any[]) => [...prevFiles, ...fileList])
 
-        setError(null) // Reset error state
+        //setError(null) // Reset error state
     }
 
     // Function to simulate a click on the file input element
@@ -115,7 +112,7 @@ export function Dropzone({
                         </Badge>
                     )
                 })}
-                {error && <span className="text-red-500">{error}</span>}
+                {/*error && <span className="text-red-500">{error}</span>*/}
             </CardContent>
         </Card>
     )

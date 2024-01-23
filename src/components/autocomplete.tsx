@@ -1,5 +1,12 @@
+"use client"
 import { useState } from "react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command"
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+} from "./ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -16,7 +23,6 @@ const Autocomplete = ({
     setPath,
 }: AutocompleteProperties) => {
     const [open, setOpen] = useState(false)
-    const [value, setValue] = useState("")
     const [input, setInput] = useState("")
 
     const getFolders = (files: File[]) =>
@@ -33,11 +39,7 @@ const Autocomplete = ({
                     aria-expanded={open}
                     className="w-[200px] justify-between"
                 >
-                    {value
-                        ? getFolders(downloadableFiles).find(
-                              (file) => file.name === value
-                          )?.name
-                        : "Destination folder"}
+                    {input ? input : "Destination folder"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -47,25 +49,34 @@ const Autocomplete = ({
                         placeholder="Destination folder"
                         onValueChange={setInput}
                     />
-                    <CommandEmpty>{`Create folder "${input}"`}</CommandEmpty>
+                    <CommandEmpty
+                        onClick={() => {
+                            setInput(input)
+                            setPath(input)
+                            setOpen(false)
+                        }}
+                    >
+                        {`Create folder "${input}"`}
+                    </CommandEmpty>
                     <CommandGroup>
                         {getFolders(downloadableFiles).map((file) => (
                             <CommandItem
                                 key={file.name}
                                 value={file.name}
                                 onSelect={(currentValue) => {
-                                    setValue(
-                                        currentValue === value
+                                    setInput(
+                                        currentValue === input
                                             ? ""
                                             : currentValue
                                     )
                                     setPath(currentValue)
+                                    setOpen(false)
                                 }}
                             >
                                 <Check
                                     className={cn(
                                         "mr-2 h-4 w-4",
-                                        value === file.name
+                                        input === file.name
                                             ? "opacity-100"
                                             : "opacity-0"
                                     )}

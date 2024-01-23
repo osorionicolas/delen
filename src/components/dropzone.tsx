@@ -58,7 +58,7 @@ export function Dropzone({
             URL.createObjectURL(file)
         )*/
         const fileList = Array.from(files)
-        setFiles((prevFiles) => [...prevFiles, ...fileList])
+        setFiles((prevFiles: any[]) => [...prevFiles, ...fileList])
 
         setError(null) // Reset error state
     }

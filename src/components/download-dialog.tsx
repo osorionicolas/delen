@@ -18,24 +18,12 @@ import { useDownloadableFiles } from "@/hooks/useDownloadableFiles"
 import { ScrollArea } from "./ui/scroll-area"
 import FileWrapper from "./tree/file-wrapper"
 import FolderWrapper from "./tree/folder-wrapper"
+import { flatFileList } from "@/lib/utils"
 
 const DownloadDialog = ({ setLoading }: any) => {
     const [checked, setChecked] = useState([])
     const [selectAll, setSelectAll] = useState(false)
     const { downloadableFiles, setDownloadableFiles, fetchFiles } = useDownloadableFiles()
-
-    const getFiles = (files: any[]) =>
-        files
-            .map((file: File) => {
-                if (file.type === FileType.DIR && file.children.length > 0) {
-                    return getFiles(file.children)
-                } else if (file.type === FileType.FILE) {
-                    return file
-                }
-                return null
-            })
-            .filter(Boolean)
-            .flat()
 
     const downloadFiles = () => {
         setLoading(true)
@@ -66,7 +54,6 @@ const DownloadDialog = ({ setLoading }: any) => {
     const handleToggle = (value: File) => {
         const currentIndex = checked.indexOf(value)
         const newChecked = [...checked]
-        console.log(newChecked, checked, currentIndex, value)
         if (currentIndex === -1) {
             newChecked.push(value)
         } else {
@@ -84,10 +71,10 @@ const DownloadDialog = ({ setLoading }: any) => {
     useEffect(() => {
         setChecked([])
         if (selectAll) {
-            setChecked(getFiles(downloadableFiles))
+            setChecked(flatFileList(downloadableFiles))
         } else if (
             checked.length > 0 &&
-            checked.length !== getFiles(downloadableFiles).length
+            checked.length !== flatFileList(downloadableFiles).length
         ) {
             setChecked(checked)
         }
@@ -119,7 +106,7 @@ const DownloadDialog = ({ setLoading }: any) => {
                                 onCheckedChange={() => setSelectAll(!selectAll)}
                                 name="checkedA"
                             />
-                            There are {getFiles(downloadableFiles).length}{" "}
+                            There are {flatFileList(downloadableFiles).length}{" "}
                             file/s
                         </div>
                     </DialogDescription>

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from "react"
+import { File } from "@/lib/definitions"
 
 type DownloadableFilesContext = {
     downloadableFiles: File[]

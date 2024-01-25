@@ -8,6 +8,7 @@ import {
 import { useState } from "react"
 import FileWrapper from "./file-wrapper"
 import { File, FileType } from "@/lib/definitions"
+import { flatFileList } from "@/lib/utils"
 
 type FolderWrapperProperties = {
     file: any
@@ -33,11 +34,16 @@ const FolderWrapper = ({
         e.preventDefault()
         e.stopPropagation()
         if(!selectAll) {
-            setChecked([...checked, ...file.children])
+            setChecked([...checked, ...flatFileList(file.children)])
             setSelectAll(true)
+            setOpenFolder(true)
         }
         else {
-            setChecked(prev => prev.filter(item => !file.children.includes(item)))
+            setChecked((prev) =>
+                prev.filter(
+                    (item) => !flatFileList(file.children).includes(item)
+                )
+            )
             setSelectAll(false)
         }
     }

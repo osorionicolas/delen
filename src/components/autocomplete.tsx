@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { FileType } from "@/lib/definitions"
+import { File, FileType } from "@/lib/definitions"
 
 type AutocompleteProperties = {
     downloadableFiles: File[]

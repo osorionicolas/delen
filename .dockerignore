@@ -6,3 +6,8 @@ scripts
 *Dockerfile*
 node_modules
 .env
+.next
+.vscode
+.gitignore
+README.md
+.dockerignore

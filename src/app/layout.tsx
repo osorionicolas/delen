@@ -9,6 +9,8 @@ import { Toaster } from "@/components/ui/toaster";
 const APP_NAME = "Delen"
 const APP_DESCRIPTION = "A file and text syncronization app"
 
+export const fetchCache = "default-no-store"
+
 export const metadata: Metadata = {
     title: APP_NAME,
     applicationName: APP_NAME,

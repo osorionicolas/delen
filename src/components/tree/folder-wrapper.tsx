@@ -12,6 +12,7 @@ import { File, FileType } from "@/lib/definitions"
 type FolderWrapperProperties = {
     file: any
     checked: any[]
+    setChecked: (files) => void
     handleToggle: (file) => void
     isRoot: boolean
 }
@@ -19,12 +20,27 @@ type FolderWrapperProperties = {
 const FolderWrapper = ({
     file,
     checked,
+    setChecked,
     handleToggle,
     isRoot,
 }: FolderWrapperProperties) => {
     const [openFolder, setOpenFolder] = useState(false)
+    const [selectAll, setSelectAll] = useState(false)
 
     const filename = file.name
+
+    const handleSelectAllFolder = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if(!selectAll) {
+            setChecked([...checked, ...file.children])
+            setSelectAll(true)
+        }
+        else {
+            setChecked(prev => prev.filter(item => !file.children.includes(item)))
+            setSelectAll(false)
+        }
+    }
 
     return (
         <Collapsible open={openFolder} key={filename}>
@@ -37,7 +53,13 @@ const FolderWrapper = ({
                     onClick={() => setOpenFolder(!openFolder)}
                 >
                     <div className="flex items-center gap-5">
-                        <Folder size={18} />
+                        <Button
+                            variant="ghost"
+                            className="px-0 [&>*]:hover:fill-blue-500 hover:bg-transparent h-5"
+                            onClick={handleSelectAllFolder}
+                        >
+                            <Folder size={18} />
+                        </Button>
                         {filename}
                     </div>
                     <Button
@@ -48,9 +70,11 @@ const FolderWrapper = ({
                     </Button>
                 </li>
             </CollapsibleTrigger>
-            <CollapsibleContent className={`CollapsibleContent border-l-2 ${
-                        isRoot ? "" : "ml-4"
-                    }`}>
+            <CollapsibleContent
+                className={`CollapsibleContent border-l-2 ${
+                    isRoot ? "" : "ml-4"
+                }`}
+            >
                 <ul>
                     {file.children.map((child: File) => {
                         const childname = child.name
@@ -64,6 +88,7 @@ const FolderWrapper = ({
                                     file={child}
                                     checked={checked}
                                     handleToggle={handleToggle}
+                                    setChecked={setChecked}
                                     isRoot={false}
                                 />
                             )

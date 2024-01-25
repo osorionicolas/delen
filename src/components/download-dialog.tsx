@@ -66,6 +66,7 @@ const DownloadDialog = ({ setLoading }: any) => {
     const handleToggle = (value: File) => {
         const currentIndex = checked.indexOf(value)
         const newChecked = [...checked]
+        console.log(newChecked, checked, currentIndex, value)
         if (currentIndex === -1) {
             newChecked.push(value)
         } else {
@@ -138,6 +139,7 @@ const DownloadDialog = ({ setLoading }: any) => {
                                         file={file}
                                         checked={checked}
                                         handleToggle={handleToggle}
+                                        setChecked={setChecked}
                                         isRoot={true}
                                     />
                                 )

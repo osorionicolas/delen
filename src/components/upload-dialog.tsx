@@ -58,7 +58,7 @@ const UploadDialog = () => {
                     <UploadCloud />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="border-transparent max-w-screen-md">
+            <DialogContent className="border-transparent max-w-screen-md overflow-y-scroll max-h-dvh">
                 <DialogHeader>
                     <DialogTitle className="text-center" id="dialog-title">
                         Upload files

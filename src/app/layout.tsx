@@ -1,10 +1,10 @@
-import Navbar from "../components/navbar";
-import "./globals.css";
-import { Metadata } from "next";
-import { ThemeProvider } from "@/components/theme-provider";
-import { DownloadableFilesProvider } from "@/hooks/useDownloadableFiles";
-import { TextProvider } from "@/hooks/useText";
-import { Toaster } from "@/components/ui/toaster";
+import Navbar from "../components/navbar"
+import "./globals.css"
+import { Metadata } from "next"
+import { ThemeProvider } from "@/components/theme-provider"
+import { DownloadableFilesProvider } from "@/hooks/useDownloadableFiles"
+import { TextProvider } from "@/hooks/useText"
+import { Toaster } from "@/components/ui/toaster"
 
 const APP_NAME = "Delen"
 const APP_DESCRIPTION = "A file and text syncronization app"
@@ -39,28 +39,28 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode
 }) {
-  return (
-      <html lang="en">
-          <body>
-              <ThemeProvider
-                  attribute="class"
-                  defaultTheme="dark"
-                  enableSystem
-                  disableTransitionOnChange
-              >
-                  <DownloadableFilesProvider>
-                      <TextProvider>
-                          <Navbar />
-                          {children}
-                          <Toaster />
-                      </TextProvider>
-                  </DownloadableFilesProvider>
-              </ThemeProvider>
-          </body>
-      </html>
-  )
+    return (
+        <html lang="en">
+            <body>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <DownloadableFilesProvider>
+                        <TextProvider>
+                            <Navbar />
+                            {children}
+                            <Toaster />
+                        </TextProvider>
+                    </DownloadableFilesProvider>
+                </ThemeProvider>
+            </body>
+        </html>
+    )
 }

@@ -3,10 +3,12 @@ const withSerwist = require("@serwist/next").default({
     swSrc: "src/app/sw.ts",
     swDest: "public/sw.js",
 })
-      
 
 const nextConfig = {
-  output: "standalone",
-};
+    output: "standalone",
+    api: {
+        responseLimit: false,
+    },
+}
 
-module.exports = withSerwist(nextConfig);
+module.exports = withSerwist(nextConfig)

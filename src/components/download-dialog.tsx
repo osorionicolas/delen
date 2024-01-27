@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import download from "downloadjs"
+import { saveAs } from "file-saver"
 import { DownloadCloud, Trash } from "lucide-react"
 import { Button } from "./ui/button"
 import { Checkbox } from "./ui/checkbox"
@@ -21,33 +21,52 @@ import FolderWrapper from "./tree/folder-wrapper"
 import { flatFileList } from "@/lib/utils"
 
 const DownloadDialog = ({ setLoading }: any) => {
-    const [checked, setChecked] = useState([])
+    const [checked, setChecked] = useState<File[]>([])
     const [selectAll, setSelectAll] = useState(false)
-    const { downloadableFiles, setDownloadableFiles, fetchFiles } = useDownloadableFiles()
+    const { downloadableFiles, setDownloadableFiles, fetchFiles } =
+        useDownloadableFiles()
 
-    const downloadFiles = () => {
-        setLoading(true)
+    const downloadFiles = async () => {
         checked.forEach(async (file: File) => {
-            const res = await fetch(`/api/files/${file.name}?path=${file.path}`)
+            const res = await fetch(`/api/files/export?path=${file.path}`)
             const blob = await res.blob()
-            download(blob, file.name)
+            saveAs(blob, file.name)
         })
-        //Parecería que no funciona
-        setLoading(false)
     }
 
-    const removeFiles = (files: File[]) => {
+    const downloadFilesV2 = async () => {
+        if (checked.length === 1) {
+            checked.forEach(async (file: File) => {
+                const res = await fetch(`/api/files/export?path=${file.path}`)
+                const blob = await res.blob()
+                saveAs(blob, file.name)
+            })
+        } else {
+            const res = await fetch("/api/files/export", {
+                method: "POST",
+                body: JSON.stringify({ files: checked }),
+            })
+            const blob = await res.blob()
+            saveAs(blob, "export_" + new Date().getTime() + ".zip")
+        }
+    }
+
+    const removeFiles = async (files: File[]) => {
         const response = window.confirm(
             "You are about to delete some files, are you sure you want it?"
         )
         if (response) {
-            files.forEach((file: File) => {
-                fetch(`/api/files?path=${file.path}`, {
-                    method: "DELETE",
-                }).then((_) => setTimeout(() => getDownloadableFiles(), 500))
-            })
-            setSelectAll(false)
-            setChecked([])
+            await Promise.resolve(
+                files.forEach(async (file: File) => {
+                    await fetch(`/api/files?path=${file.path}`, {
+                        method: "DELETE",
+                    })
+                })
+            ).then((_) => setTimeout(() => {
+                setSelectAll(false)
+                setChecked([])
+                getFiles()
+            }, 500))
         }
     }
 
@@ -63,7 +82,7 @@ const DownloadDialog = ({ setLoading }: any) => {
         setChecked(newChecked)
     }
 
-    const getDownloadableFiles = async () => {
+    const getFiles = async () => {
         const files = await fetchFiles()
         setDownloadableFiles(files)
     }
@@ -84,7 +103,7 @@ const DownloadDialog = ({ setLoading }: any) => {
     const setOpen = () => {
         setSelectAll(false)
         setChecked([])
-        getDownloadableFiles()
+        getFiles()
     }
 
     return (
@@ -159,7 +178,7 @@ const DownloadDialog = ({ setLoading }: any) => {
                                 : ""}
                         </Button>
                         <Button
-                            onClick={() => downloadFiles()}
+                            onClick={downloadFilesV2}
                             disabled={checked.length === 0}
                         >
                             <DownloadCloud className="mr-2" />

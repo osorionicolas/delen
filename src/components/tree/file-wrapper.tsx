@@ -31,7 +31,7 @@ const FileWrapper = ({
                 {filename}
             </div>
             <CopyButton
-                text={`${window.location.origin}/api/files/${filename}?path=${file.path}`}
+                text={`${window.location.origin}/api/files/export?path=${file.path}`}
             />
         </li>
     )

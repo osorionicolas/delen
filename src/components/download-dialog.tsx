@@ -27,14 +27,6 @@ const DownloadDialog = ({ setLoading }: any) => {
         useDownloadableFiles()
 
     const downloadFiles = async () => {
-        checked.forEach(async (file: File) => {
-            const res = await fetch(`/api/files/export?path=${file.path}`)
-            const blob = await res.blob()
-            saveAs(blob, file.name)
-        })
-    }
-
-    const downloadFilesV2 = async () => {
         if (checked.length === 1) {
             checked.forEach(async (file: File) => {
                 const res = await fetch(`/api/files/export?path=${file.path}`)
@@ -178,7 +170,7 @@ const DownloadDialog = ({ setLoading }: any) => {
                                 : ""}
                         </Button>
                         <Button
-                            onClick={downloadFilesV2}
+                            onClick={downloadFiles}
                             disabled={checked.length === 0}
                         >
                             <DownloadCloud className="mr-2" />

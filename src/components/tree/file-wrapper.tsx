@@ -12,14 +12,14 @@ const FileWrapper = ({
     file,
     checked,
     handleToggle,
-    isRoot
+    isRoot,
 }: FileWrapperProperties) => {
     const filename = file.name
 
     return (
         <li
             className={`cursor-pointer flex justify-between hover:bg-zinc-500 py-1 pr-1 ${
-                isRoot ? "" : "pl-4"
+                !isRoot && "pl-4"
             }`}
             onClick={() => handleToggle(file)}
         >

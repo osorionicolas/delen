@@ -125,15 +125,15 @@ const DownloadDialog = ({ setLoading }: any) => {
                 <Separator />
                 <ScrollArea className="max-h-96">
                     <ul>
-                        {downloadableFiles.map((file: any) => {
-                            const filename = file.name
+                        {downloadableFiles.map((file: File) => {
+                            const filePath = file.path
                             if (
                                 file.type === FileType.DIR &&
                                 file.children.length > 0
                             ) {
                                 return (
                                     <FolderWrapper
-                                        key={filename}
+                                        key={filePath}
                                         file={file}
                                         checked={checked}
                                         handleToggle={handleToggle}
@@ -144,7 +144,7 @@ const DownloadDialog = ({ setLoading }: any) => {
                             } else if (file.type === FileType.FILE) {
                                 return (
                                     <FileWrapper
-                                        key={filename}
+                                        key={filePath}
                                         file={file}
                                         checked={checked}
                                         handleToggle={handleToggle}
@@ -161,7 +161,7 @@ const DownloadDialog = ({ setLoading }: any) => {
                         <Button
                             variant="destructive"
                             onClick={() => removeFiles(checked)}
-                            disabled={checked.length === 0}
+                            disabled={checked && checked.length === 0}
                         >
                             <Trash className="mr-2" />
                             Delete{" "}

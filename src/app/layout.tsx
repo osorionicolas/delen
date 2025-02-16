@@ -1,10 +1,7 @@
-import Navbar from "../components/navbar"
 import "./globals.css"
 import { Metadata } from "next"
-import { ThemeProvider } from "@/components/theme-provider"
-import { DownloadableFilesProvider } from "@/hooks/useDownloadableFiles"
-import { TextProvider } from "@/hooks/useText"
-import { Toaster } from "@/components/ui/toaster"
+import { AppWrapper } from "./app-wrapper"
+import Navbar from "@/components/navbar"
 
 const APP_NAME = "Delen"
 const APP_DESCRIPTION = "A file and text syncronization app"
@@ -46,20 +43,8 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem
-                    disableTransitionOnChange
-                >
-                    <DownloadableFilesProvider>
-                        <TextProvider>
-                            <Navbar />
-                            {children}
-                            <Toaster />
-                        </TextProvider>
-                    </DownloadableFilesProvider>
-                </ThemeProvider>
+                <Navbar />
+                <AppWrapper>{children}</AppWrapper>
             </body>
         </html>
     )

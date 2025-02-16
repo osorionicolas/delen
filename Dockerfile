@@ -59,6 +59,8 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT 3000
+ENV FILES_PATH "public/files"
+ENV SMTP_HOST "smtp.mailtrap.io"
 # set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
 

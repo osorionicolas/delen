@@ -16,4 +16,3 @@ installSerwist({
   navigationPreload: true,
   runtimeCaching: defaultCache,
 });
-

@@ -2,7 +2,6 @@
 import React, { useState } from "react"
 import Autocomplete from "@/components/autocomplete"
 import { Button } from "./ui/button"
-import { Separator } from "./ui/separator"
 import { useDownloadableFiles } from "@/hooks/useDownloadableFiles"
 import { toast } from "./ui/use-toast"
 import { Dropzone } from "./dropzone"
@@ -11,7 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 const FileUpload = () => {
     const [path, setPath] = useState<any>(null)
     const [files, setFiles] = useState([])
-    const { downloadableFiles } = useDownloadableFiles()
+    const { downloadableFiles, fetchFiles } = useDownloadableFiles()
 
     const handleSave = () => {
         files.forEach((file: any) => {
@@ -29,6 +28,8 @@ const FileUpload = () => {
             variant: "success",
         })
         setPath(null)
+        setFiles([])
+        fetchFiles()
     }
 
     return (

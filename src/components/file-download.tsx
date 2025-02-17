@@ -90,7 +90,7 @@ const FileDownload = () => {
                     Uploaded files
                 </CardTitle>
             </CardHeader>
-            <CardContent className="max-w-screen-md">
+            <CardContent className="max-w-(--breakpoint-md)">
                 <CardDescription className="pb-4">
                     <div className="flex items-center gap-5 text-white">
                         <Checkbox

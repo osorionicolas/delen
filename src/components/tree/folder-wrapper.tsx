@@ -66,7 +66,7 @@ const FolderWrapper = ({
                     <div className="flex items-center gap-5">
                         <Button
                             variant="ghost"
-                            className={`px-0 [&>*]:hover:fill-blue-500 hover:bg-transparent h-5`}
+                            className={`px-0 hover:*:fill-blue-500 hover:bg-transparent h-5`}
                             onClick={handleSelectAllFolder}
                         >
                             {openFolder ? (

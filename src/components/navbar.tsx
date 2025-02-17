@@ -7,7 +7,7 @@ import Link from "next/link"
 const Navbar = () => {
 
     return (
-        <header className="text-white shadow">
+        <header className="text-white shadow-sm">
             <div className="flex bg-[#009980] min-h-12 items-center px-6">
                 <div className="flex justify-around">
                     <Link href="/">

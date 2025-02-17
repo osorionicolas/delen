@@ -112,7 +112,6 @@ export function Dropzone({
                         </Badge>
                     )
                 })}
-                {/*error && <span className="text-red-500">{error}</span>*/}
             </CardContent>
         </Card>
     )

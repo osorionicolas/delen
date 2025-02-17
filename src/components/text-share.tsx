@@ -8,6 +8,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Textarea } from "./ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
+import { Text } from "@/lib/definitions";
 
 const TextShare = () => {
     const [content, setContent] = useState("");
@@ -69,7 +70,7 @@ const TextShare = () => {
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            {texts.map((text) => (
+                            {texts.map((text: Text) => (
                                 <div
                                     key={text.id}
                                     className="flex justify-between items-center p-3 rounded-lg bg-muted/50"

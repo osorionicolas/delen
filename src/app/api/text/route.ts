@@ -1,8 +1,4 @@
-type Text = {
-    id: string;
-    content: string;
-    created_at: string;
-};
+import { Text } from "@/lib/definitions";
 
 let text: Text[] = []
 

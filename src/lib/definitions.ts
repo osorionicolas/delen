@@ -8,3 +8,9 @@ export type File = {
   children?: File[]
   path: string
 }
+
+export type Text = {
+    id: string;
+    content: string;
+    created_at: string;
+};

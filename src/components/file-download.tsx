@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { saveAs } from "file-saver"
 import { DownloadCloud, Trash } from "lucide-react"
 import { Button } from "./ui/button"
@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 const FileDownload = () => {
     const [checked, setChecked] = useState<File[]>([])
     const [selectAll, setSelectAll] = useState(false)
-    const { downloadableFiles, setDownloadableFiles, fetchFiles } =
+    const { downloadableFiles, fetchFiles } =
         useDownloadableFiles()
 
     const downloadFiles = async () => {
@@ -49,7 +49,7 @@ const FileDownload = () => {
             ).then((_) => setTimeout(() => {
                 setSelectAll(false)
                 setChecked([])
-                getFiles()
+                fetchFiles()
             }, 500))
         }
     }
@@ -66,11 +66,6 @@ const FileDownload = () => {
         setChecked(newChecked)
     }
 
-    const getFiles = async () => {
-        const files = await fetchFiles()
-        setDownloadableFiles(files)
-    }
-
     useEffect(() => {
         setChecked([])
         if (selectAll) {
@@ -83,6 +78,10 @@ const FileDownload = () => {
         }
         // eslint-disable-next-line
     }, [selectAll])
+
+    useCallback(() => {
+        fetchFiles()
+    }, [downloadableFiles])
 
     return (
         <Card>

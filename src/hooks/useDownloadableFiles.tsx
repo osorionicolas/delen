@@ -18,11 +18,11 @@ export const DownloadableFilesProvider = ({ children }: any) => {
     const files = await fetch("/api/files")
       .then((response) => response.json())
       .then((data) => data);
-    return files
+    setDownloadableFiles(files)
   }
 
   useEffect(() => {
-    fetchFiles().then((files) => setDownloadableFiles(files))
+    fetchFiles()
   }, [])
 
   return (

@@ -21,7 +21,7 @@ const FileUpload = () => {
             fetch(`/api/files${query}`, {
                 method: "POST",
                 body: data,
-            })
+            }).then(() => fetchFiles())
         })
         toast({
             description: "Files uploaded successfully!",
@@ -29,7 +29,6 @@ const FileUpload = () => {
         })
         setPath(null)
         setFiles([])
-        fetchFiles()
     }
 
     return (

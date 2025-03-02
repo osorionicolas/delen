@@ -83,6 +83,10 @@ const FileDownload = () => {
         fetchFiles()
     }, [downloadableFiles])
 
+    const tags = Array.from({ length: 50 }).map(
+        (_, i, a) => `v1.2.0-beta.${a.length - i}`
+    )
+
     return (
         <Card>
             <CardHeader>
@@ -104,7 +108,7 @@ const FileDownload = () => {
                 </CardDescription>
                 <Separator/>
                 <CardContent className="p-4">
-                    <ScrollArea className="max-h-96">
+                    <ScrollArea className="h-96">
                         <ul>
                             {downloadableFiles.map((file: File) => {
                                 const filePath = file.path

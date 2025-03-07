@@ -3,7 +3,6 @@ import { useState } from "react"
 import {
     Command,
     CommandEmpty,
-    CommandGroup,
     CommandInput,
     CommandItem,
 } from "./ui/command"
@@ -12,6 +11,7 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { File, FileType } from "@/lib/definitions"
+import { CommandList } from "cmdk"
 
 type AutocompleteProperties = {
     downloadableFiles: File[]
@@ -25,10 +25,16 @@ const Autocomplete = ({
     const [open, setOpen] = useState(false)
     const [input, setInput] = useState("")
 
-    const getFolders = (files: File[]) =>
-        files
+    const getFolders = (files: File[]) => {
+        console.log(files)
+        console.log(files
+            .map((file: File) => (file.type === FileType.DIR ? file : null))
+            .filter(Boolean))
+        return files
             .map((file: File) => (file.type === FileType.DIR ? file : null))
             .filter(Boolean)
+    }
+        
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -58,7 +64,7 @@ const Autocomplete = ({
                     >
                         {`Create folder "${input}"`}
                     </CommandEmpty>
-                    <CommandGroup>
+                    <CommandList>
                         {getFolders(downloadableFiles).map((file) => (
                             <CommandItem
                                 key={file.name}
@@ -84,7 +90,7 @@ const Autocomplete = ({
                                 {file.name}
                             </CommandItem>
                         ))}
-                    </CommandGroup>
+                    </CommandList>
                 </Command>
             </PopoverContent>
         </Popover>

@@ -27,7 +27,6 @@ const FileUpload = () => {
             description: "Files uploaded successfully!",
             variant: "success",
         })
-        setPath(null)
         setFiles([])
         fetchFiles()
     }

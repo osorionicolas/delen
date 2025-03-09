@@ -107,7 +107,7 @@ const FileDownload = () => {
                     </div>
                 </CardDescription>
                 <Separator/>
-                <CardContent className="p-4">
+                <CardContent className="p-0 py-4">
                     <ScrollArea className="h-96">
                         <ul>
                             {downloadableFiles.map((file: File) => {

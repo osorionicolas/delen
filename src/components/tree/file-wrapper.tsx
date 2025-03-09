@@ -18,7 +18,7 @@ const FileWrapper = ({
 
     return (
         <li
-            className={`cursor-pointer flex justify-between hover:bg-zinc-500 py-1 pr-1 ${
+            className={`cursor-pointer flex items-center justify-between hover:bg-zinc-500 py-1 pl-4 pr-1 ${
                 !isRoot && "pl-4"
             }`}
             onClick={() => handleToggle(file)}

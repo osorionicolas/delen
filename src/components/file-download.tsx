@@ -177,7 +177,7 @@ const FileDownload = () => {
                     <Button
                         variant="destructive"
                         onClick={removeFiles}
-                        disabled={checked.length === 0 || removeMutation.isPending}
+                        disabled={checked.length === 0 || removeMutation.isPending || downloadMutation.isPending}
                     >
                         {removeMutation.isPending ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -189,7 +189,7 @@ const FileDownload = () => {
                     </Button>
                     <Button
                         onClick={downloadFiles}
-                        disabled={checked.length === 0 || downloadMutation.isPending}
+                        disabled={checked.length === 0 || downloadMutation.isPending || removeMutation.isPending}
                     >
                         {downloadMutation.isPending ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

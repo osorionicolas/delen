@@ -1,18 +1,14 @@
 import copy from "copy-to-clipboard"
 import { Files } from "lucide-react"
 import { Button } from "./ui/button"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 const CopyButton = ({ text }: { text: string }) => {
-    const { toast } = useToast()
 
     const onCopy = (event) => {
         event.stopPropagation()
         copy(extractContent(text))
-        toast({
-            description: "Text copied to clipboard!",
-            variant: "success",
-        })
+        toast.success("Text copied to clipboard!")
     }
 
     const extractContent = (html) => {

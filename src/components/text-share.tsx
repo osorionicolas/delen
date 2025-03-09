@@ -7,12 +7,11 @@ import { Button } from "./ui/button"
 import { apiRequest, queryClient } from "@/lib/queryClient"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Textarea } from "./ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Text } from "@/lib/definitions";
 
 const TextShare = () => {
     const [content, setContent] = useState("");
-    const { toast } = useToast();
 
     const { data: texts = [], isLoading } = useQuery<Text[]>({
         queryKey: ["/api/text"],
@@ -25,18 +24,11 @@ const TextShare = () => {
         onSuccess: () => {
             setContent("");
             queryClient.invalidateQueries({ queryKey: ["/api/text"] });
-            toast({
-                title: "Success",
-                description: "Text shared successfully",
-            });
+            toast.success("Text shared successfully");
             queryClient.fetchQuery({ queryKey: ["/api/text"] });
         },
         onError: () => {
-            toast({
-                title: "Error",
-                description: "Failed to share text",
-                variant: "destructive",
-            });
+            toast.error("Failed to share text");
         },
     });
 

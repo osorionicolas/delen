@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect } from "react"
 import { saveAs } from "file-saver"
-import { DownloadCloud, Trash } from "lucide-react"
+import { DownloadCloud, Trash, Loader2 } from "lucide-react"
 import { Button } from "./ui/button"
 import { Checkbox } from "./ui/checkbox"
 import { File, FileType } from "@/lib/definitions"
@@ -11,46 +11,82 @@ import FileWrapper from "./tree/file-wrapper"
 import FolderWrapper from "./tree/folder-wrapper"
 import { flatFileList } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 const FileDownload = () => {
     const [checked, setChecked] = useState<File[]>([])
     const [selectAll, setSelectAll] = useState(false)
-    const { downloadableFiles, fetchFiles } =
-        useDownloadableFiles()
+    const queryClient = useQueryClient()
+    const { downloadableFiles, fetchFiles } = useDownloadableFiles()
 
-    const downloadFiles = async () => {
-        if (checked.length === 1) {
-            checked.forEach(async (file: File) => {
+    // Download files mutation
+    const downloadMutation = useMutation({
+        mutationFn: async (filesToDownload: File[]) => {
+            if (filesToDownload.length === 1) {
+                const file = filesToDownload[0]
                 const res = await fetch(`/api/files/export?path=${file.path}`)
+                if (!res.ok) throw new Error('Failed to download file')
                 const blob = await res.blob()
                 saveAs(blob, file.name)
-            })
-        } else {
-            const res = await fetch("/api/files/export", {
-                method: "POST",
-                body: JSON.stringify({ files: checked }),
-            })
-            const blob = await res.blob()
-            saveAs(blob, "export_" + new Date().getTime() + ".zip")
+                return
+            } else {
+                const res = await fetch("/api/files/export", {
+                    method: "POST",
+                    body: JSON.stringify({ files: filesToDownload }),
+                })
+                if (!res.ok) throw new Error('Failed to download files')
+                const blob = await res.blob()
+                saveAs(blob, "export_" + new Date().getTime() + ".zip")
+                return
+            }
+        },
+        onSuccess: () => {
+            toast.success(`${checked.length} file(s) downloaded successfully`)
+        },
+        onError: (error) => {
+            toast.error(`Failed to download files: ${error.message}`)
+        }
+    })
+
+    // Remove files mutation
+    const removeMutation = useMutation({
+        mutationFn: async (filesToRemove: File[]) => {
+            return Promise.all(
+                filesToRemove.map(async (file: File) => {
+                    const res = await fetch(`/api/files?path=${file.path}`, {
+                        method: "DELETE",
+                    })
+                    if (!res.ok) throw new Error(`Failed to delete ${file.name}`)
+                    return file
+                })
+            )
+        },
+        onSuccess: () => {
+            toast.success(`${checked.length} file(s) deleted successfully`)
+            setSelectAll(false)
+            setChecked([])
+            fetchFiles()
+            // Invalidate and refetch files
+            queryClient.invalidateQueries({ queryKey: ['downloadableFiles'] })
+        },
+        onError: (error) => {
+            toast.error(`Failed to delete files: ${error.message}`)
+        }
+    })
+
+    const downloadFiles = async () => {
+        if (checked.length > 0) {
+            downloadMutation.mutate(checked)
         }
     }
 
-    const removeFiles = async (files: File[]) => {
+    const removeFiles = async () => {
         const response = window.confirm(
             "You are about to delete some files, are you sure you want it?"
         )
-        if (response) {
-            await Promise.resolve(
-                files.forEach(async (file: File) => {
-                    await fetch(`/api/files?path=${file.path}`, {
-                        method: "DELETE",
-                    })
-                })
-            ).then((_) => setTimeout(() => {
-                setSelectAll(false)
-                setChecked([])
-                fetchFiles()
-            }, 500))
+        if (response && checked.length > 0) {
+            removeMutation.mutate(checked)
         }
     }
 
@@ -78,14 +114,6 @@ const FileDownload = () => {
         }
         // eslint-disable-next-line
     }, [selectAll])
-
-    useCallback(() => {
-        fetchFiles()
-    }, [downloadableFiles])
-
-    const tags = Array.from({ length: 50 }).map(
-        (_, i, a) => `v1.2.0-beta.${a.length - i}`
-    )
 
     return (
         <Card>
@@ -137,6 +165,7 @@ const FileDownload = () => {
                                         />
                                     )
                                 }
+                                return null
                             })}
                         </ul>
                     </ScrollArea>
@@ -147,24 +176,28 @@ const FileDownload = () => {
                 <div className="flex gap-4">
                     <Button
                         variant="destructive"
-                        onClick={() => removeFiles(checked)}
-                        disabled={checked && checked.length === 0}
+                        onClick={removeFiles}
+                        disabled={checked.length === 0 || removeMutation.isPending}
                     >
-                        <Trash className="mr-2" />
-                        Delete{" "}
-                        {checked.length > 0
-                            ? `${checked.length} files`
-                            : ""}
+                        {removeMutation.isPending ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Trash className="mr-2" />
+                        )}
+                        {removeMutation.isPending ? "Deleting..." : "Delete"}
+                        {!removeMutation.isPending && checked.length > 0 ? ` ${checked.length} files` : ""}
                     </Button>
                     <Button
                         onClick={downloadFiles}
-                        disabled={checked.length === 0}
+                        disabled={checked.length === 0 || downloadMutation.isPending}
                     >
-                        <DownloadCloud className="mr-2" />
-                        Download{" "}
-                        {checked.length > 0
-                            ? `${checked.length} files`
-                            : ""}
+                        {downloadMutation.isPending ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <DownloadCloud className="mr-2" />
+                        )}
+                        {downloadMutation.isPending ? "Downloading..." : "Download"}
+                        {!downloadMutation.isPending && checked.length > 0 ? ` ${checked.length} files` : ""}
                     </Button>
                 </div>
             </CardFooter>

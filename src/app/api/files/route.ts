@@ -8,7 +8,7 @@ const dirPath = process.env.FILES_PATH || "public/files"
 export function GET() {
     console.log("Looking for files")
     const tree = dirTree(dirPath, { attributes: ["size", "type", "extension"] })
-    return NextResponse.json(tree.children)
+    return NextResponse.json(tree?.children)
 }
 
 export async function POST(request: NextRequest) {

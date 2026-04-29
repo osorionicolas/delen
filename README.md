@@ -1,6 +1,6 @@
 ## Run
 
-yarn dev
+pnpm dev
 
 Runs the app in the development mode.
 
